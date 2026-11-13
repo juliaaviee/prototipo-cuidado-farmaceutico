@@ -1,0 +1,2647 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="artifact-type" content="tool">
+  <meta name="design-style" content="vitals">
+  <title>Inteligência Farmacoterapêutica para o SUS — Protótipo Clínico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Figtree:wght@300..900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@1.43.0/dist/umd/lucide.min.js"></script>
+  <style>
+    :root {
+      color-scheme: light;
+
+      /* Page and surfaces (Vitals) */
+      --background: #ffffff;
+      --surface-container-low: #f1f7f8;
+      --surface-container: #e3f1f3;
+      --surface-container-high: #d5e9ec;
+
+      /* Text */
+      --on-surface: #1b2b33;
+      --on-surface-variant: #46585f;
+
+      /* Rules */
+      --outline: #7b9198;
+      --outline-variant: #d5e3e5;
+
+      /* Accents */
+      --primary: #0f7c8a;
+      --primary-hover: #0b616c;
+      --on-primary: #ffffff;
+      --primary-container: #e3f1f3;
+      --on-primary-container: #0a5560;
+      --secondary: #1d5e3a;
+      --tertiary: #2e7d4f;
+      --error: #b3261e;
+      --on-error: #ffffff;
+
+      /* Data series */
+      --data-1: #0f7c8a;
+      --data-2: #2e7d4f;
+      --data-3: #b86e00;
+      --data-4: #5c5fb0;
+      --data-context: #b8c7ca;
+
+      /* Semantic UI tokens */
+      --positive: var(--tertiary);
+      --warning: var(--data-3);
+      --focus: var(--primary);
+      --ok-bg: #e7f4ec;
+      --watch-bg: #fdf3e2;
+      --watch-text: #7a4800;
+      --alert-bg: #fbeceb;
+      --whatsapp-header: #0d5c63;
+      --whatsapp-canvas: #eef4f5;
+      --whatsapp-in: #ffffff;
+      --whatsapp-out: #d9f0ec;
+      --whatsapp-system: #e3f1f3;
+      --dark-frame: #1b2b33;
+
+      /* Fonts */
+      --font-headline: 'Figtree', sans-serif;
+      --font-body: 'Atkinson Hyperlegible', sans-serif;
+      --font-label: 'Figtree', sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+
+      /* Shape */
+      --rounded: 0.625rem;
+      --rounded-lg: 0.875rem;
+      --rounded-full: 9999px;
+
+      /* Style effects */
+      --top-bar: 6px solid var(--primary);
+      --status-bar-width: 4px;
+      --card-border: 1px solid var(--outline-variant);
+      --card-lift: 0 1px 2px rgb(27 43 51 / 0.05), 0 6px 16px rgb(27 43 51 / 0.05);
+
+      /* Type scale (Focused Tool / Workstation) */
+      --display-size: clamp(1.65rem, 1.35rem + 1.1vw, 2.2rem);
+      --headline-size: clamp(1.2rem, 1.08rem + 0.45vw, 1.45rem);
+      --subhead-size: clamp(1.02rem, 0.98rem + 0.2vw, 1.15rem);
+      --body-size: clamp(0.9375rem, 0.91rem + 0.14vw, 1rem);
+      --label-size: 0.75rem;
+
+      /* Spacing scale */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.5rem;
+      --space-2xl: 4rem;
+      --space-3xl: 6rem;
+
+      /* Motion */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      --dur-micro: 120ms;
+      --dur-short: 220ms;
+      --dur-long: 420ms;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      overflow-x: clip;
+      margin: 0;
+      padding: 0;
+      background: var(--surface-container-low);
+      color: var(--on-surface);
+      font-family: var(--font-body);
+      font-size: var(--body-size);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    header { position: static !important; }
+
+    /* Focus rings */
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    .page {
+      border-top: var(--top-bar);
+      min-height: 100vh;
+    }
+
+    .page-grid {
+      display: grid;
+      gap: var(--space-lg);
+      padding: var(--space-lg);
+      max-width: 1260px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+    .page-grid * { min-width: 0; }
+
+    /* Typography */
+    .title {
+      font-family: var(--font-headline);
+      font-weight: 800;
+      font-size: var(--display-size);
+      letter-spacing: -0.015em;
+      line-height: 1.08;
+      color: var(--on-surface);
+      margin: 0;
+    }
+    h2 {
+      font-family: var(--font-headline);
+      font-weight: 800;
+      font-size: var(--headline-size);
+      letter-spacing: -0.015em;
+      line-height: 1.15;
+      color: var(--on-surface);
+      margin: 0;
+    }
+    h3 {
+      font-family: var(--font-headline);
+      font-weight: 700;
+      font-size: var(--subhead-size);
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+      color: var(--on-surface);
+      margin: 0;
+    }
+    .lede {
+      font-size: 1.05rem;
+      line-height: 1.55;
+      color: var(--on-surface-variant);
+      max-width: 65ch;
+      margin: var(--space-sm) 0 0 0;
+    }
+    .kicker {
+      font-family: var(--font-label);
+      font-weight: 600;
+      font-size: var(--label-size);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--on-surface-variant);
+    }
+    .mono {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+    .tabular {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Header & context strip */
+    .top-header {
+      display: grid;
+      gap: var(--space-md);
+      padding-bottom: var(--space-md);
+      border-bottom: 1px solid var(--outline-variant);
+    }
+    .header-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+    }
+    .badge-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    /* Chips */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      font-family: var(--font-label);
+      font-weight: 600;
+      font-size: var(--label-size);
+      line-height: 1.2;
+      padding: var(--space-xs) var(--space-md);
+      border-radius: var(--rounded-full);
+      background: var(--ok-bg);
+      color: var(--secondary);
+      white-space: nowrap;
+    }
+    .chip[data-status="info"] {
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+    }
+    .chip[data-status="watch"] {
+      background: var(--watch-bg);
+      color: var(--watch-text);
+    }
+    .chip[data-status="alert"] {
+      background: var(--alert-bg);
+      color: var(--error);
+    }
+    .chip[data-status="neutral"] {
+      background: var(--surface-container-low);
+      color: var(--on-surface-variant);
+      border: var(--card-border);
+    }
+
+    /* Preset strip */
+    .case-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      background: var(--background);
+      border: var(--card-border);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-md);
+    }
+    .preset-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .preset-btn {
+      font-family: var(--font-label);
+      font-weight: 600;
+      font-size: 0.875rem;
+      min-height: 44px;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--rounded);
+      border: 1px solid var(--outline-variant);
+      background: var(--background);
+      color: var(--on-surface);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      transition: background-color var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out);
+    }
+    .preset-btn:hover {
+      background: var(--surface-container-low);
+      border-color: var(--outline);
+    }
+    .preset-btn.active {
+      background: var(--primary-container);
+      border-color: var(--primary);
+      color: var(--on-primary-container);
+    }
+
+    /* Summary KPI strip */
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+      gap: var(--space-md);
+    }
+
+    /* Status cards */
+    .status-card {
+      background: var(--background);
+      border: var(--card-border);
+      border-left: var(--status-bar-width) solid var(--primary);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-md) var(--space-lg);
+      display: grid;
+      gap: var(--space-xs);
+    }
+    .status-card[data-status="ok"] { border-left-color: var(--tertiary); }
+    .status-card[data-status="watch"] { border-left-color: var(--data-3); }
+    .status-card[data-status="alert"] { border-left-color: var(--error); }
+
+    .kpi-value {
+      font-family: var(--font-headline);
+      font-weight: 800;
+      font-size: 1.55rem;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+      color: var(--on-surface);
+    }
+    .kpi-caption {
+      font-size: 0.85rem;
+      color: var(--on-surface-variant);
+    }
+    .kpi-caption.ok { color: var(--secondary); font-weight: 700; }
+    .kpi-caption.alert { color: var(--error); font-weight: 700; }
+    .kpi-caption.watch { color: var(--watch-text); font-weight: 700; }
+
+    /* Module Tabs */
+    .module-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      border-bottom: 1px solid var(--outline-variant);
+      background: var(--background);
+      padding: 0 var(--space-md);
+      border-radius: var(--rounded-lg) var(--rounded-lg) 0 0;
+      border: var(--card-border);
+    }
+    .module-tab {
+      font-family: var(--font-label);
+      font-weight: 600;
+      font-size: 0.95rem;
+      min-height: 50px;
+      padding: var(--space-md) var(--space-md);
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      transition: color var(--dur-micro) var(--ease-out), background-color var(--dur-micro) var(--ease-out);
+    }
+    .module-tab:hover {
+      color: var(--on-surface);
+      background: var(--surface-container-low);
+    }
+    .module-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    /* Panels & Layouts */
+    .module-section {
+      display: none;
+      gap: var(--space-lg);
+      animation: fadeUp var(--dur-short) var(--ease-out);
+    }
+    .module-section.active {
+      display: grid;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .two-col-clinical {
+      display: grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+      gap: var(--space-lg);
+      align-items: start;
+    }
+    .two-col-tele {
+      display: grid;
+      grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
+      gap: var(--space-lg);
+      align-items: start;
+    }
+    .panel {
+      background: var(--background);
+      border: var(--card-border);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-lg);
+      display: grid;
+      gap: var(--space-md);
+      box-shadow: var(--card-lift);
+    }
+    .panel-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--outline-variant);
+    }
+
+    /* Forms & Inputs */
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-md);
+    }
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-md);
+    }
+    .field {
+      display: grid;
+      gap: var(--space-xs);
+      align-content: start;
+    }
+    .field label {
+      font-family: var(--font-label);
+      font-weight: 600;
+      font-size: 0.84rem;
+      color: var(--on-surface);
+    }
+    .field-hint {
+      font-size: 0.78rem;
+      color: var(--on-surface-variant);
+    }
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      font-family: var(--font-body);
+      font-size: 0.9375rem;
+      color: var(--on-surface);
+      background: var(--background);
+      border: 1px solid var(--outline);
+      border-radius: var(--rounded);
+      padding: 0.625rem 0.75rem;
+      transition: border-color var(--dur-micro) var(--ease-out), box-shadow var(--dur-micro) var(--ease-out);
+    }
+    select {
+      padding-right: 2rem;
+    }
+    textarea {
+      min-height: 104px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-container);
+    }
+
+    /* Checkboxes */
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+      gap: var(--space-sm);
+    }
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-md);
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--rounded);
+      cursor: pointer;
+      min-height: 44px;
+      font-size: 0.875rem;
+    }
+    .check-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    /* Buttons */
+    .btn {
+      font-family: var(--font-label);
+      font-weight: 600;
+      font-size: 0.92rem;
+      min-height: 44px;
+      padding: var(--space-sm) var(--space-lg);
+      border-radius: var(--rounded);
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      transition: background-color var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out);
+    }
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: var(--on-primary);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-hover);
+    }
+    .btn-secondary {
+      background: var(--background);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--surface-container-low);
+    }
+    .btn-ok {
+      background: var(--ok-bg);
+      color: var(--secondary);
+      border-color: var(--tertiary);
+    }
+    .btn-ok:hover:not(:disabled) {
+      background: var(--surface-container);
+    }
+    .btn-ghost {
+      background: var(--surface-container-low);
+      color: var(--on-surface);
+      border-color: var(--outline-variant);
+    }
+    .btn-ghost:hover:not(:disabled) {
+      background: var(--surface-container);
+    }
+    .btn-alert {
+      background: var(--error);
+      color: var(--on-error);
+    }
+    .btn-sm {
+      min-height: 36px;
+      padding: var(--space-xs) var(--space-md);
+      font-size: 0.83rem;
+    }
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    /* Callouts */
+    .callout {
+      background: var(--primary-container);
+      border-left: var(--status-bar-width) solid var(--primary);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-md);
+      color: var(--on-primary-container);
+      font-size: 0.9rem;
+      display: grid;
+      gap: var(--space-xs);
+    }
+    .callout[data-status="alert"] {
+      background: var(--alert-bg);
+      border-left-color: var(--error);
+      color: var(--error);
+    }
+    .callout[data-status="ok"] {
+      background: var(--ok-bg);
+      border-left-color: var(--tertiary);
+      color: var(--secondary);
+    }
+
+    /* RAG PRM cards */
+    .rag-list {
+      display: grid;
+      gap: var(--space-md);
+    }
+    .prm-card {
+      background: var(--background);
+      border: var(--card-border);
+      border-left: var(--status-bar-width) solid var(--primary);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-md);
+      display: grid;
+      gap: var(--space-sm);
+    }
+    .prm-card[data-severity="alta"] { border-left-color: var(--error); }
+    .prm-card[data-severity="moderada"] { border-left-color: var(--data-3); }
+    .prm-card[data-severity="leve"] { border-left-color: var(--primary); }
+    .prm-card.validated {
+      border-left-color: var(--tertiary);
+      background: var(--surface-container-low);
+    }
+
+    .prm-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-sm);
+    }
+    .prm-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      align-items: center;
+    }
+    .rag-source-box {
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--rounded);
+      padding: var(--space-sm) var(--space-md);
+      font-size: 0.85rem;
+      color: var(--on-surface-variant);
+    }
+
+    /* Risk Stratification & Reference Band */
+    .risk-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+      gap: var(--space-lg);
+      align-items: center;
+    }
+    .risk-score-box {
+      padding: var(--space-lg);
+      border-radius: var(--rounded-lg);
+      background: var(--surface-container-low);
+      border: var(--card-border);
+      border-left: var(--status-bar-width) solid var(--primary);
+      display: grid;
+      gap: var(--space-xs);
+    }
+    .risk-score-box[data-tier="baixo"] { border-left-color: var(--tertiary); }
+    .risk-score-box[data-tier="moderado"] { border-left-color: var(--data-3); }
+    .risk-score-box[data-tier="alto"] { border-left-color: var(--error); }
+
+    .risk-number {
+      font-family: var(--font-headline);
+      font-weight: 800;
+      font-size: 2.5rem;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .chart-box {
+      width: 100%;
+      min-height: 140px;
+      display: grid;
+      gap: var(--space-sm);
+    }
+
+    .factor-bars {
+      display: grid;
+      gap: var(--space-sm);
+    }
+    .factor-row {
+      display: grid;
+      gap: var(--space-xs);
+    }
+    .factor-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .bar-track {
+      height: 10px;
+      background: var(--surface-container);
+      border-radius: var(--rounded-full);
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: var(--rounded-full);
+      background: var(--data-1);
+      transition: width var(--dur-short) var(--ease-out);
+    }
+
+    /* Document Generator */
+    .doc-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+    }
+    .doc-tab-btn {
+      font-family: var(--font-label);
+      font-weight: 600;
+      font-size: 0.84rem;
+      min-height: 40px;
+      padding: var(--space-xs) var(--space-md);
+      border-radius: var(--rounded);
+      border: 1px solid var(--outline-variant);
+      background: var(--background);
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+    .doc-tab-btn:hover {
+      background: var(--surface-container-low);
+      color: var(--on-surface);
+    }
+    .doc-tab-btn.active {
+      background: var(--primary);
+      color: var(--on-primary);
+      border-color: var(--primary);
+    }
+    .doc-editor {
+      min-height: 290px;
+      font-family: var(--font-body);
+      font-size: 0.94rem;
+      line-height: 1.6;
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline);
+      border-radius: var(--rounded);
+      padding: var(--space-md);
+    }
+
+    /* WhatsApp Simulator */
+    .phone-frame {
+      background: var(--background);
+      border: 2px solid var(--dark-frame);
+      border-radius: 1.5rem;
+      overflow: hidden;
+      box-shadow: var(--card-lift);
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      min-height: 620px;
+      max-height: 760px;
+    }
+    .wa-header {
+      background: var(--whatsapp-header);
+      color: var(--on-primary);
+      padding: var(--space-md);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+    }
+    .wa-contact {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .wa-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--rounded-full);
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-headline);
+      font-weight: 800;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .wa-subbar {
+      background: var(--surface-container);
+      color: var(--on-primary-container);
+      padding: var(--space-xs) var(--space-md);
+      font-size: 0.78rem;
+      font-weight: 600;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-xs);
+      border-bottom: 1px solid var(--outline-variant);
+    }
+    .wa-messages {
+      background: var(--whatsapp-canvas);
+      padding: var(--space-md);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .wa-bubble {
+      max-width: 86%;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--rounded-lg);
+      font-size: 0.9rem;
+      line-height: 1.45;
+      border: 1px solid var(--outline-variant);
+      display: grid;
+      gap: var(--space-xs);
+    }
+    .wa-bubble.bot {
+      align-self: flex-start;
+      background: var(--whatsapp-in);
+      border-top-left-radius: 2px;
+    }
+    .wa-bubble.pharmacist {
+      align-self: flex-start;
+      background: var(--ok-bg);
+      border-color: var(--tertiary);
+      border-top-left-radius: 2px;
+    }
+    .wa-bubble.patient {
+      align-self: flex-end;
+      background: var(--whatsapp-out);
+      border-top-right-radius: 2px;
+    }
+    .wa-bubble.system {
+      align-self: center;
+      background: var(--whatsapp-system);
+      color: var(--on-primary-container);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-align: center;
+      max-width: 95%;
+      padding: var(--space-xs) var(--space-md);
+    }
+    .wa-sender {
+      font-family: var(--font-label);
+      font-weight: 700;
+      font-size: 0.74rem;
+      color: var(--on-primary-container);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .wa-time {
+      font-size: 0.72rem;
+      color: var(--on-surface-variant);
+      justify-self: end;
+      font-variant-numeric: tabular-nums;
+    }
+    .wa-audio-box {
+      display: grid;
+      gap: var(--space-xs);
+      padding: var(--space-sm);
+      background: var(--surface-container-low);
+      border-radius: var(--rounded);
+      border: 1px solid var(--outline-variant);
+    }
+    .wa-audio-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .wa-wave {
+      flex: 1;
+      height: 22px;
+    }
+    .wa-input-bar {
+      background: var(--background);
+      border-top: 1px solid var(--outline-variant);
+      padding: var(--space-sm);
+      display: flex;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+    .wa-input-bar input {
+      flex: 1;
+    }
+
+    /* Quick replies & Supervision */
+    .quick-reply-grid {
+      display: grid;
+      gap: var(--space-xs);
+    }
+    .quick-btn {
+      text-align: left;
+      justify-content: flex-start;
+      font-size: 0.84rem;
+      padding: var(--space-sm) var(--space-md);
+      min-height: 40px;
+    }
+
+    .timeline-box {
+      min-height: 160px;
+      width: 100%;
+    }
+
+    .compliance-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+      gap: var(--space-md);
+    }
+
+    .inline-feedback {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--secondary);
+    }
+
+    /* Footer */
+    .source-footer {
+      border-top: 1px solid var(--outline-variant);
+      padding-top: var(--space-md);
+      font-size: 0.84rem;
+      color: var(--on-surface-variant);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: var(--space-sm);
+    }
+
+    @media (max-width: 960px) {
+      .two-col-clinical,
+      .two-col-tele,
+      .risk-hero {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page-grid {
+        padding: var(--space-md);
+        gap: var(--space-md);
+      }
+      .form-grid-2,
+      .form-grid-3 {
+        grid-template-columns: 1fr;
+      }
+      .module-nav {
+        padding: 0 var(--space-xs);
+      }
+      .module-tab {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <main class="page-grid">
+      <header class="top-header">
+        <div class="header-meta-row">
+          <span class="kicker">Inovação Digital no Cuidado Farmacêutico • SUS &amp; Farmácia Escola</span>
+          <div class="badge-group">
+            <span class="chip" data-status="info">TRL 4 • Protótipo em Validação</span>
+            <span class="chip" data-status="ok">Anvisa RDC 657/2022 • LGPD</span>
+          </div>
+        </div>
+        <div>
+          <h1 class="title">Inteligência Farmacoterapêutica para o SUS</h1>
+          <p class="lede">
+            Protótipo de consultório clínico com coleta única de dados, assistente RAG com base científica, estratificação de risco de não adesão, geração automática de documentos e telemonitoramento calibrado com validação humana obrigatória.
+          </p>
+        </div>
+
+        <div class="case-toolbar" role="region" aria-label="Seleção de caso clínico">
+          <div class="preset-group">
+            <span class="kicker">Casos de Demonstração:</span>
+            <button type="button" class="preset-btn active" id="preset-btn-hepatitec" onclick="loadPreset('hepatitec')">
+              Caso 1: Hepatite C (Carlos E.)
+            </button>
+            <button type="button" class="preset-btn" id="preset-btn-hepatiteb" onclick="loadPreset('hepatiteb')">
+              Caso 2: Hepatite B (Maria G.)
+            </button>
+            <button type="button" class="preset-btn" id="preset-btn-hiv" onclick="loadPreset('hiv')">
+              Caso 3: HIV / TARV (Rafael T.)
+            </button>
+            <button type="button" class="preset-btn" id="preset-btn-novo" onclick="loadPreset('novo')">
+              Novo Atendimento
+            </button>
+          </div>
+          <div class="btn-row">
+            <button type="button" class="btn btn-ghost btn-sm" id="reset-state-btn" onclick="resetPrototype(this)">
+              Restaurar Caso Padrão
+            </button>
+          </div>
+        </div>
+
+        <div class="kpi-strip" id="kpi-strip">
+          <div class="status-card" id="kpi-card-prm" data-status="alert">
+            <span class="kicker">Problemas Identificados (RAG)</span>
+            <span class="kpi-value" id="kpi-prm-count">0</span>
+            <span class="kpi-caption" id="kpi-prm-caption">Aguardando análise</span>
+          </div>
+          <div class="status-card" id="kpi-card-risk" data-status="alert">
+            <span class="kicker">Risco de Não Adesão</span>
+            <span class="kpi-value" id="kpi-risk-score">0 pts</span>
+            <span class="kpi-caption" id="kpi-risk-tier">Não calculado</span>
+          </div>
+          <div class="status-card" id="kpi-card-freq" data-status="info">
+            <span class="kicker">Cadência do Telemonitoramento</span>
+            <span class="kpi-value" id="kpi-freq-days">7 dias</span>
+            <span class="kpi-caption" id="kpi-freq-mode">Multimodal (Texto + Voz)</span>
+          </div>
+          <div class="status-card" id="kpi-card-human" data-status="watch">
+            <span class="kicker">Validação Profissional (SaMD)</span>
+            <span class="kpi-value" id="kpi-human-status">0 / 0</span>
+            <span class="kpi-caption" id="kpi-human-caption">Supervisão ativa</span>
+          </div>
+        </div>
+      </header>
+
+      <nav class="module-nav" aria-label="Módulos do sistema">
+        <button type="button" class="module-tab active" id="tab-btn-1" onclick="switchModule(1)">
+          <span>1. Atendimento Clínico (Consultório)</span>
+          <span class="chip" data-status="info" id="tab-badge-1">RAG Ativo</span>
+        </button>
+        <button type="button" class="module-tab" id="tab-btn-2" onclick="switchModule(2)">
+          <span>2. Estratificação de Risco &amp; Documentos</span>
+          <span class="chip" data-status="watch" id="tab-badge-2">Documentos</span>
+        </button>
+        <button type="button" class="module-tab" id="tab-btn-3" onclick="switchModule(3)">
+          <span>3. Simulador de Telemonitoramento (WhatsApp)</span>
+          <span class="chip" data-status="ok" id="tab-badge-3">Bot Supervisionado</span>
+        </button>
+      </nav>
+
+      <!-- MÓDULO 1: ATENDIMENTO CLÍNICO -->
+      <section class="module-section active" id="module-1" aria-label="Módulo 1: Atendimento Clínico">
+        <div class="two-col-clinical">
+          <!-- Coluna Esquerda: Entrada de Dados -->
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="kicker">Coleta Única em Consultório</span>
+                <h2>Dados Subjetivos, Objetivos e Letramento</h2>
+              </div>
+              <span class="chip" data-status="info">Tela Única Integrada</span>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="field">
+                <label for="pt-name">Iniciais ou Nome do Paciente</label>
+                <input type="text" id="pt-name" oninput="handleClinicalChange()">
+              </div>
+              <div class="field">
+                <label for="pt-age">Idade (anos)</label>
+                <input type="number" id="pt-age" min="1" max="115" oninput="handleClinicalChange()">
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="field">
+                <label for="pt-condition">Condição Crônica Infecciosa (SUS)</label>
+                <select id="pt-condition" onchange="handleClinicalChange()">
+                  <option value="hepatitec">Hepatite C Crônica (HCV)</option>
+                  <option value="hepatiteb">Hepatite B Crônica (HBV)</option>
+                  <option value="hiv">Infecção pelo HIV (TARV)</option>
+                  <option value="tuberculose">Tuberculose (TB)</option>
+                  <option value="hanseniase">Hanseníase (PQT)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="pt-meds">Esquema Farmacoterapêutico Atual</label>
+                <input type="text" id="pt-meds" oninput="handleClinicalChange()">
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="pt-subjective">Dados Subjetivos (Relato do Paciente na Consulta)</label>
+              <span class="field-hint">Sintomas percebidos, dificuldades de uso, esquecimentos, barreiras sociais ou receios relatados.</span>
+              <textarea id="pt-subjective" oninput="handleClinicalChange()"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="pt-objective">Dados Objetivos (Exames Laboratoriais e Prontuário)</label>
+              <span class="field-hint">Resultados comprobatórios: carga viral, função hepática/renal, histórico de dispensação.</span>
+              <textarea id="pt-objective" oninput="handleClinicalChange()"></textarea>
+            </div>
+
+            <div class="field">
+              <label>Fatores e Gatilhos Clínicos / Psicossociais Detectados</label>
+              <div class="check-grid">
+                <label class="check-item">
+                  <input type="checkbox" id="flag-ram" onchange="handleClinicalChange()">
+                  <span>Reação adversa relatada (náusea, cefaleia, dor)</span>
+                </label>
+                <label class="check-item">
+                  <input type="checkbox" id="flag-irregular" onchange="handleClinicalChange()">
+                  <span>Uso irregular ou esquecimento recente de doses</span>
+                </label>
+                <label class="check-item">
+                  <input type="checkbox" id="flag-renal" onchange="handleClinicalChange()">
+                  <span>Alteração laboratorial (função renal/hepática)</span>
+                </label>
+                <label class="check-item">
+                  <input type="checkbox" id="flag-caps" onchange="handleClinicalChange()">
+                  <span>Uso nocivo de álcool ou dependência química</span>
+                </label>
+                <label class="check-item">
+                  <input type="checkbox" id="flag-mental" onchange="handleClinicalChange()">
+                  <span>Saúde mental deteriorada / transtorno bipolar</span>
+                </label>
+                <label class="check-item">
+                  <input type="checkbox" id="flag-social" onchange="handleClinicalChange()">
+                  <span>Vulnerabilidade social / estigma no trabalho</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-grid-3">
+              <div class="field">
+                <label for="lit-school">Letramento Escolar</label>
+                <select id="lit-school" onchange="handleClinicalChange()">
+                  <option value="baixo">Baixo (Fundamental incompleto)</option>
+                  <option value="moderado">Moderado (Ensino Médio)</option>
+                  <option value="adequado">Adequado (Superior / Técnico)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="lit-health">Letramento em Saúde</label>
+                <select id="lit-health" onchange="handleClinicalChange()">
+                  <option value="baixo">Baixo (Dificuldade com posologia)</option>
+                  <option value="moderado">Moderado (Compreensão parcial)</option>
+                  <option value="adequado">Adequado (Autônomo)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="lit-digital">Letramento Digital</label>
+                <select id="lit-digital" onchange="handleClinicalChange()">
+                  <option value="baixo">Baixo (Prefere áudio / voz)</option>
+                  <option value="moderado">Moderado (Uso básico WhatsApp)</option>
+                  <option value="adequado">Adequado (Texto e links)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button type="button" class="btn btn-primary" onclick="runRagAnalysis(true)">
+                Atualizar Análise RAG
+              </button>
+              <span class="inline-feedback" id="rag-run-feedback" aria-live="polite"></span>
+            </div>
+          </div>
+
+          <!-- Coluna Direita: Assistente RAG -->
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="kicker">Assistente RAG • Vetorização &amp; Base Científica</span>
+                <h2>Problemas Identificados e Conduta Sugerida</h2>
+              </div>
+              <span class="chip" data-status="ok" id="rag-kb-chip">Base PCDT / OMS</span>
+            </div>
+
+            <div class="callout" data-status="info">
+              <strong>Harmonização da Prática Clínica + Validação Humana Obrigatória</strong>
+              <span id="rag-kb-summary">
+                O agente cruza relato subjetivo × dados objetivos contra diretrizes clínicas vetorizadas (PCDT Ministério da Saúde e OMS). Nenhuma conduta é entregue ao paciente sem sua validação profissional.
+              </span>
+            </div>
+
+            <div class="rag-list" id="rag-results-container">
+              <!-- Preenchido via JS -->
+            </div>
+
+            <div class="panel-header" style="border-bottom: none; padding-bottom: 0; padding-top: var(--space-sm);">
+              <div>
+                <span class="kicker">Próxima Etapa do Fluxo</span>
+                <p style="margin: var(--space-xs) 0 0 0; font-size: 0.88rem; color: var(--on-surface-variant);" id="validation-gate-text">
+                  Valide as sugestões clínicas acima para alimentar a estratificação de risco e os documentos.
+                </p>
+              </div>
+              <div class="btn-row">
+                <button type="button" class="btn btn-ok btn-sm" onclick="validateAllPrms()">
+                  Validar Todas
+                </button>
+                <button type="button" class="btn btn-primary" onclick="switchModule(2)">
+                  Estratificar Risco e Gerar Documentos
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MÓDULO 2: ESTRATIFICAÇÃO DE RISCO E DOCUMENTOS -->
+      <section class="module-section" id="module-2" aria-label="Módulo 2: Estratificação de Risco e Gerador de Documentos">
+        <!-- Parte A: Estratificação de Risco -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="kicker">Motor de Estratificação Preditiva</span>
+              <h2>Risco de Não Adesão e Calibração de Telemonitoramento</h2>
+            </div>
+            <span class="chip" id="risk-tier-chip" data-status="alert">Alto Risco</span>
+          </div>
+
+          <div class="risk-hero">
+            <div class="risk-score-box" id="risk-score-box" data-tier="alto">
+              <span class="kicker">Índice Composto de Risco</span>
+              <span class="risk-number" id="risk-score-display">78 / 100</span>
+              <span id="risk-tier-label" style="font-weight: 700;">Alto Risco de Não Adesão</span>
+              <span class="field-hint" id="risk-clinical-rationale">
+                Combinação de baixa adesão inicial, reação adversa ativa e baixo letramento em saúde.
+              </span>
+            </div>
+
+            <div class="chart-box">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: var(--space-xs);">
+                <h3>Faixa de Referência de Risco Farmacoterapêutico</h3>
+                <span class="kicker">Meta de Segurança: &lt; 35 pts</span>
+              </div>
+              <div id="risk-gauge-svg" style="min-height: 82px;"></div>
+              <div class="factor-bars" id="risk-factors-bars">
+                <!-- Preenchido via JS -->
+              </div>
+            </div>
+          </div>
+
+          <div class="callout" data-status="info">
+            <strong>Calibração Anti-Fadiga (Base Científica)</strong>
+            <span>
+              A literatura demonstra que mensagens diárias desgastam o paciente e reduzem a relevância do canal. A periodicidade do bot é ajustada pelo grau de risco identificado na consulta inicial.
+            </span>
+          </div>
+
+          <div class="form-grid-3" style="align-items: end;">
+            <div class="field">
+              <label for="tele-frequency">Frequência Validada do Bot</label>
+              <select id="tele-frequency" onchange="updateTelePlanFromControl()">
+                <option value="7">Semanal (a cada 7 dias) — Alto Risco</option>
+                <option value="15">Quinzenal (a cada 15 dias) — Risco Moderado</option>
+                <option value="30">Mensal (a cada 30 dias) — Baixo Risco</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="tele-modality">Modalidade de Envio (Acessibilidade)</label>
+              <select id="tele-modality" onchange="updateTelePlanFromControl()">
+                <option value="multimodal">Multimodal (Texto + Mensagem de Voz)</option>
+                <option value="audio">Áudio Prioritário + Transcrição</option>
+                <option value="texto">Texto Simplificado</option>
+              </select>
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-primary" onclick="approveTelePlan()">
+                Validar Plano no Bot
+              </button>
+              <button type="button" class="btn btn-secondary" onclick="switchModule(3)">
+                Abrir Simulador WhatsApp
+              </button>
+            </div>
+          </div>
+          <span class="inline-feedback" id="tele-plan-feedback" aria-live="polite"></span>
+        </div>
+
+        <!-- Parte B: Gerador Automático de Documentos -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="kicker">Automação de Registros Clínicos (Saída Única)</span>
+              <h2>Gerador Automático de Documentos</h2>
+            </div>
+            <span class="chip" id="doc-validation-chip" data-status="watch">Aguardando Assinatura</span>
+          </div>
+
+          <div class="doc-tabs" role="tablist" aria-label="Tipos de documentos clínicos">
+            <button type="button" class="doc-tab-btn active" id="doc-btn-prontuario" onclick="selectDocumentType('prontuario')">
+              Evolução em Prontuário (SOAP)
+            </button>
+            <button type="button" class="doc-tab-btn" id="doc-btn-orientacao" onclick="selectDocumentType('orientacao')">
+              Orientação ao Paciente
+            </button>
+            <button type="button" class="doc-tab-btn" id="doc-btn-medico" onclick="selectDocumentType('medico')">
+              Carta ao Médico Assistente
+            </button>
+            <button type="button" class="doc-tab-btn" id="doc-btn-caps" onclick="selectDocumentType('caps')">
+              Encaminhamento CAPS
+            </button>
+            <button type="button" class="doc-tab-btn" id="doc-btn-social" onclick="selectDocumentType('social')">
+              Serviço Social / Psicologia
+            </button>
+          </div>
+
+          <div class="form-grid-2" style="align-items: end;">
+            <div class="field">
+              <label for="pharmacist-name">Farmacêutico(a) Responsável pela Validação</label>
+              <input type="text" id="pharmacist-name" oninput="handlePharmacistEdit()">
+            </div>
+            <div class="field">
+              <label for="pharmacist-crf">Registro Profissional (CRF-UF)</label>
+              <input type="text" id="pharmacist-crf" oninput="handlePharmacistEdit()">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="doc-content-area" id="doc-editor-label">Conteúdo Gerado Automaticamente (Editável antes da Validação)</label>
+            <textarea class="doc-editor" id="doc-content-area" oninput="handleDocManualEdit()"></textarea>
+          </div>
+
+          <div class="btn-row" style="justify-content: space-between;">
+            <div class="btn-row">
+              <button type="button" class="btn btn-primary" onclick="signCurrentDocument()">
+                Validar e Assinar Documento
+              </button>
+              <button type="button" class="btn btn-secondary" onclick="regenerateCurrentDocument()">
+                Regerar com Dados Atuais
+              </button>
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-ghost" onclick="copyCurrentDocument()">
+                Copiar Texto
+              </button>
+              <button type="button" class="btn btn-ghost" onclick="exportCurrentDocument()">
+                Exportar .txt
+              </button>
+            </div>
+          </div>
+          <span class="inline-feedback" id="doc-feedback" aria-live="polite"></span>
+        </div>
+      </section>
+
+      <!-- MÓDULO 3: SIMULADOR DE TELEMONITORAMENTO (WHATSAPP) -->
+      <section class="module-section" id="module-3" aria-label="Módulo 3: Simulador de Telemonitoramento via WhatsApp">
+        <div class="two-col-tele">
+          <!-- Coluna Esquerda: Smartphone WhatsApp -->
+          <div class="phone-frame" aria-label="Simulador de interface WhatsApp do paciente">
+            <div class="wa-header">
+              <div class="wa-contact">
+                <div class="wa-avatar" aria-hidden="true">FE</div>
+                <div>
+                  <div style="font-family: var(--font-headline); font-weight: 700; font-size: 0.96rem;">Farmácia Escola • Cuidado</div>
+                  <div style="font-size: 0.75rem; opacity: 0.9;" id="wa-status-line">Bot Supervisionado • Online</div>
+                </div>
+              </div>
+              <span class="chip" data-status="ok" style="font-size: 0.7rem;">LGPD Ativo</span>
+            </div>
+
+            <div class="wa-subbar">
+              <span id="wa-cadence-banner">Frequência: A cada 7 dias</span>
+              <span id="wa-modality-banner">Modo: Texto + Áudio</span>
+            </div>
+
+            <div class="wa-messages" id="wa-chat-log" aria-live="polite">
+              <!-- Mensagens renderizadas via JS -->
+            </div>
+
+            <div class="wa-input-bar">
+              <label for="wa-patient-input" class="kicker" style="position: absolute; left: -9999px;">Mensagem do paciente</label>
+              <input type="text" id="wa-patient-input" placeholder="Simular resposta do paciente..." onkeydown="handleWaKeydown(event)">
+              <button type="button" class="btn btn-primary btn-sm" onclick="sendPatientMessage()">
+                Enviar
+              </button>
+            </div>
+          </div>
+
+          <!-- Coluna Direita: Console de Supervisão & Governança -->
+          <div style="display: grid; gap: var(--space-lg);">
+            <!-- Trava de Segurança / Escalada Humana -->
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <span class="kicker">Trava Ética e Regulatória (Human-in-the-Loop)</span>
+                  <h2>Console de Supervisão Clínica</h2>
+                </div>
+                <span class="chip" id="bot-safety-chip" data-status="ok">Monitoramento Normal</span>
+              </div>
+
+              <div id="escalation-box" class="callout" data-status="ok">
+                <strong>Sistema em Cadência Programada</strong>
+                <span>
+                  O chatbot envia apenas mensagens previamente validadas pelo farmacêutico e nunca menciona o diagnóstico do paciente (sigilo LGPD). Se o paciente relatar reação adversa ou risco de abandono, o bot pausa e aciona você imediatamente.
+                </span>
+              </div>
+
+              <div id="pharmacist-reply-panel" style="display: none; gap: var(--space-sm);">
+                <div class="field">
+                  <label for="pharmacist-chat-reply">Intervenção Direta do Farmacêutico no WhatsApp</label>
+                  <textarea id="pharmacist-chat-reply" style="min-height: 80px;"></textarea>
+                </div>
+                <div class="btn-row">
+                  <button type="button" class="btn btn-alert" onclick="sendPharmacistIntervention()">
+                    Enviar Resposta Clínica e Assumir Caso
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <span class="kicker" style="display: block; margin-bottom: var(--space-xs);">Controles de Simulação do Ciclo</span>
+                <div class="btn-row" style="margin-bottom: var(--space-sm);">
+                  <button type="button" class="btn btn-primary btn-sm" onclick="simulateNextCycle()">
+                    Avançar Próximo Ciclo (<span id="cycle-step-label">+7 dias</span>)
+                  </button>
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="toggleAudioView()">
+                    Alternar Mensagem de Voz / Texto
+                  </button>
+                </div>
+
+                <span class="kicker" style="display: block; margin-bottom: var(--space-xs);">Testar Respostas Típicas do Paciente</span>
+                <div class="quick-reply-grid">
+                  <button type="button" class="btn btn-ghost quick-btn" onclick="triggerQuickPatientReply('ok')">
+                    Paciente: "Estou tomando certinho todos os dias, sem problemas."
+                  </button>
+                  <button type="button" class="btn btn-ghost quick-btn" onclick="triggerQuickPatientReply('esqueci')">
+                    Paciente: "Esqueci de tomar a dose de ontem à noite, o que eu faço?"
+                  </button>
+                  <button type="button" class="btn btn-ghost quick-btn" onclick="triggerQuickPatientReply('ram')">
+                    Paciente: "Estou com muita náusea e tontura forte depois do remédio." (Aciona Trava)
+                  </button>
+                  <button type="button" class="btn btn-ghost quick-btn" onclick="triggerQuickPatientReply('abandono')">
+                    Paciente: "Não quero mais tomar isso, estou pensando em parar." (Aciona Trava)
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Linha do tempo anti-fadiga -->
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <span class="kicker">Prevenção de Fadiga de Mensagens</span>
+                  <h3>Comparativo de Contatos em 30 Dias</h3>
+                </div>
+                <span class="chip" data-status="info" id="cadence-summary-chip">4 envios / mês</span>
+              </div>
+              <div class="timeline-box" id="cadence-svg-container"></div>
+              <p style="margin: 0; font-size: 0.86rem; color: var(--on-surface-variant);">
+                Mensagens diárias geram sobrecarga cognitiva e abandono do canal. A cadência calibrada mantém relevância clínica sem invadir a rotina do paciente.
+              </p>
+            </div>
+
+            <!-- Governança e Normativas -->
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <span class="kicker">Governança, Ética e Engenharia</span>
+                  <h3>Requisitos Regulatórios e Escopo TRL 4</h3>
+                </div>
+              </div>
+              <div class="compliance-grid">
+                <div class="status-card" data-status="ok">
+                  <span class="kicker">Anvisa RDC 657/2022</span>
+                  <span style="font-weight: 700;">Software como Dispositivo Médico</span>
+                  <span class="kpi-caption">Decisões assistidas por IA exigem validação explícita do profissional de saúde.</span>
+                </div>
+                <div class="status-card" data-status="ok">
+                  <span class="kicker">LGPD (Lei 13.709/2018)</span>
+                  <span style="font-weight: 700;">Sigilo Diagnóstico no Canal</span>
+                  <span class="kpi-caption">Notificações no WhatsApp omitem patologias (HIV, HCV, HBV) contra acesso de terceiros.</span>
+                </div>
+                <div class="status-card" data-status="info">
+                  <span class="kicker">Inclusão e Acessibilidade</span>
+                  <span style="font-weight: 700;">Interface Multimodal</span>
+                  <span class="kpi-caption">Áudio + transcrição para baixo letramento escolar e digital; desafio aberto para deficiência visual severa.</span>
+                </div>
+                <div class="status-card" data-status="watch">
+                  <span class="kicker">Maturidade Tecnológica</span>
+                  <span style="font-weight: 700;">TRL 4 • Validação Controlada</span>
+                  <span class="kpi-caption">Protótipo científico em validação acadêmica (mestrado/doutorado); não implantado em produção assistencial.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="source-footer">
+        <span>
+          <strong>Fonte de Conhecimento:</strong> Entrevista com coordenação clínica (Farmácia Escola / UnB) sobre inovação digital no cuidado farmacêutico, protocolos PCDT (Ministério da Saúde), diretrizes OMS e RDC 657/2022 (Anvisa).
+        </span>
+        <span class="mono">Estado salvo localmente no espaço de trabalho</span>
+      </footer>
+    </main>
+  </div>
+
+  <api-shim></api-shim>
+  <script>
+    const PRESETS = {
+      hepatitec: {
+        id: `hepatitec`,
+        name: `Carlos Eduardo M.`,
+        age: 54,
+        condition: `hepatitec`,
+        meds: `Sofosbuvir 400mg + Velpatasvir 100mg (1 comp/dia, 12 semanas)`,
+        subjective: `Relata dificuldade para ler a bula e confusão com horários. Refere náuseas leves após o almoço na primeira semana e esquecimento de 2 doses no fim de semana quando consumiu bebida alcoólica. Informa insônia e oscilações de humor (transtorno bipolar sem seguimento regular atual).`,
+        objective: `HCV-RNA detectável (1.420.000 UI/mL), Genótipo 1b, Elastografia F2. AST 68 U/L, ALT 84 U/L, Creatinina 0,95 mg/dL (eGFR 86 mL/min). Prontuário indica retirada tardia na farmácia ambulatorial no ciclo anterior.`,
+        flags: {
+          ram: true,
+          irregular: true,
+          renal: false,
+          caps: true,
+          mental: true,
+          social: false
+        },
+        litSchool: `baixo`,
+        litHealth: `baixo`,
+        litDigital: `moderado`,
+        pharmacistName: `Dr. Fernando (Farmácia Escola)`,
+        pharmacistCrf: `CRF-DF 04128`
+      },
+      hepatiteb: {
+        id: `hepatiteb`,
+        name: `Maria das Graças S.`,
+        age: 62,
+        condition: `hepatiteb`,
+        meds: `Fumarato de Tenofovir Desoproxila (TDF) 300mg (1 comp/dia, uso contínuo)`,
+        subjective: `Diz tomar o comprimido todos os dias ao acordar com ajuda da filha. Relata que não sabe ler bem mensagens longas no celular e prefere ouvir áudios curtos no WhatsApp. Sem queixas gástricas ou tontura.`,
+        objective: `HBsAg reagente há 8 anos (acompanhamento crônico vitalício). HBV-DNA < 20 UI/mL (indetectável). Exame recente mostra elevação discreta de creatinina sérica para 1,38 mg/dL (eGFR caiu de 68 para 49 mL/min).`,
+        flags: {
+          ram: false,
+          irregular: false,
+          renal: true,
+          caps: false,
+          mental: false,
+          social: false
+        },
+        litSchool: `baixo`,
+        litHealth: `moderado`,
+        litDigital: `baixo`,
+        pharmacistName: `Dr. Fernando (Farmácia Escola)`,
+        pharmacistCrf: `CRF-DF 04128`
+      },
+      hiv: {
+        id: `hiv`,
+        name: `Rafael T.`,
+        age: 31,
+        condition: `hiv`,
+        meds: `Tenofovir 300mg + Lamivudina 300mg + Dolutegravir 50mg (TARV 1 comp/dia)`,
+        subjective: `Trabalha em turno noturno e relata pular doses nos dias em que dorme fora de casa por receio de colegas verem o frasco do medicamento. Queixa-se de cefaleia e insônia nos últimos 10 dias após mudança de turno.`,
+        objective: `HIV-1 Carga Viral 320 cópias/mL (previamente indetectável há 6 meses; blips/rebote inicial). LT-CD4+ 510 céls/mm³. Histórico de tuberculose pulmonar tratada com cura há 2 anos.`,
+        flags: {
+          ram: true,
+          irregular: true,
+          renal: false,
+          caps: false,
+          mental: false,
+          social: true
+        },
+        litSchool: `adequado`,
+        litHealth: `moderado`,
+        litDigital: `adequado`,
+        pharmacistName: `Dr. Fernando (Farmácia Escola)`,
+        pharmacistCrf: `CRF-DF 04128`
+      },
+      novo: {
+        id: `novo`,
+        name: `Paciente em Acolhimento`,
+        age: 40,
+        condition: `tuberculose`,
+        meds: `Esquema Básico RHZE (Rifampicina + Isoniazida + Pirazinamida + Etambutol)`,
+        subjective: `Descreva aqui o relato do paciente (sintomas, adesão, contexto social, dúvidas)...`,
+        objective: `Insira aqui os dados de exames laboratoriais e histórico do prontuário...`,
+        flags: {
+          ram: false,
+          irregular: false,
+          renal: false,
+          caps: false,
+          mental: false,
+          social: false
+        },
+        litSchool: `moderado`,
+        litHealth: `moderado`,
+        litDigital: `moderado`,
+        pharmacistName: `Dr. Fernando (Farmácia Escola)`,
+        pharmacistCrf: `CRF-DF 04128`
+      }
+    };
+
+    const CONDITION_LABELS = {
+      hepatitec: { name: `Hepatite C Crônica (HCV)`, pcdt: `PCDT Hepatite C e Coinfecções (MS)` },
+      hepatiteb: { name: `Hepatite B Crônica (HBV)`, pcdt: `PCDT Hepatite B e Coinfecções (MS)` },
+      hiv: { name: `Infecção pelo HIV (TARV)`, pcdt: `PCDT Manejo da Infecção pelo HIV em Adultos (MS)` },
+      tuberculose: { name: `Tuberculose (TB)`, pcdt: `Manual de Recomendações para Controle da Tuberculose (MS)` },
+      hanseniase: { name: `Hanseníase (PQT)`, pcdt: `PCDT Hanseníase (MS)` }
+    };
+
+    let appState = {
+      activeModule: 1,
+      activePreset: `hepatitec`,
+      clinical: JSON.parse(JSON.stringify(PRESETS.hepatitec)),
+      prms: [],
+      validatedPrmIds: [],
+      riskScore: 0,
+      riskTier: `alto`,
+      teleFrequency: 7,
+      teleModality: `multimodal`,
+      telePlanApproved: false,
+      activeDocType: `prontuario`,
+      docEdits: {},
+      signedDocs: {},
+      chat: [],
+      cycleDay: 1,
+      audioModeActive: true,
+      playingAudioId: null,
+      escalationActive: false,
+      escalationReason: ``
+    };
+
+    function clonePreset(key) {
+      return JSON.parse(JSON.stringify(PRESETS[key] || PRESETS.hepatitec));
+    }
+
+    function computePrmsFromClinical(c) {
+      const prms = [];
+      const condInfo = CONDITION_LABELS[c.condition] || CONDITION_LABELS.hepatitec;
+      const subj = (c.subjective || ``).toLowerCase();
+      const obj = (c.objective || ``).toLowerCase();
+
+      if (c.flags.irregular || subj.includes(`esquec`) || subj.includes(`pular`)) {
+        prms.push({
+          id: `prm-adesao`,
+          title: `Risco de Falha Terapêutica por Irregularidade de Doses`,
+          category: `Adesão / Efetividade`,
+          severity: c.condition === `hepatitec` || c.condition === `hiv` ? `alta` : `moderada`,
+          evidence: `Cruzamento Subjetivo × Objetivo: relato de doses omitidas associado a risco de resistência viral ou progressão hepática (${c.condition === 'hepatitec' ? 'prevenção de cirrose e transplante' : 'manutenção da supressão'}).`,
+          source: `${condInfo.pcdt} • Adesão e Retenção ao Cuidado`,
+          suggestion: `Reorganizar tomada vinculada à rotina diária, pactuar meta de adesão ≥ 95% e incluir lembrete calibrado no telemonitoramento.`
+        });
+      }
+
+      if (c.flags.ram || subj.includes(`náusea`) || subj.includes(`enjoo`) || subj.includes(`cefaleia`) || subj.includes(`tontura`) || subj.includes(`insônia`)) {
+        prms.push({
+          id: `prm-ram`,
+          title: `Suspeita de Reação Adversa a Medicamento (RAM)`,
+          category: `Segurança`,
+          severity: `moderada`,
+          evidence: `Relato de sintomas compatíveis com eventos adversos iniciais do esquema (${c.meds}). Sem sinais de alarme grave descritos, mas impacta adesão se não manejado.`,
+          source: `${condInfo.pcdt} • Farmacovigilância e Manejo de Eventos Adversos`,
+          suggestion: `Orientar medidas não farmacológicas (ingestão com alimento leve se aplicável, higiene do sono), monitorar evolução em 7 dias e notificar médico se persistência.`
+        });
+      }
+
+      if (c.flags.renal || obj.includes(`creatinina`) || obj.includes(`egfr`) || obj.includes(`49 ml`)) {
+        prms.push({
+          id: `prm-renal`,
+          title: `Alteração de Função Renal — Necessidade de Avaliação de Dose`,
+          category: `Segurança / Ajuste Posológico`,
+          severity: `alta`,
+          evidence: `Dado objetivo de laboratório indica redução de taxa de filtração glomerular (eGFR < 50 mL/min ou creatinina elevada). Schemas com Tenofovir (TDF) exigem revisão de intervalo ou troca.`,
+          source: `${condInfo.pcdt} • Ajuste em Insuficiência Renal`,
+          suggestion: `Emitir Carta ao Médico Assistente solicitando avaliação de função renal e eventual ajuste de intervalo ou substituição por alternativa segura (ex: Entecavir/TAF conforme critério).`
+        });
+      }
+
+      if (c.flags.caps || subj.includes(`álcool`) || subj.includes(`alcool`) || subj.includes(`bebida`) || subj.includes(`droga`)) {
+        prms.push({
+          id: `prm-caps`,
+          title: `Uso de Álcool / Substâncias Impactando Adesão e Hepatotoxicidade`,
+          category: `Segurança / Rede Psicossocial`,
+          severity: `alta`,
+          evidence: `Uso de álcool potencializa risco de hepatotoxicidade em hepatites virais e provoca omissão de doses nos fins de semana.`,
+          source: `Diretriz RAPS / Ministério da Saúde & ${condInfo.pcdt}`,
+          suggestion: `Realizar aconselhamento breve sem estigma e gerar Carta de Encaminhamento ao CAPS ad para cuidado compartilhado.`
+        });
+      }
+
+      if (c.flags.mental || subj.includes(`bipolar`) || subj.includes(`ansiedade`) || subj.includes(`depress`)) {
+        prms.push({
+          id: `prm-mental`,
+          title: `Sofrimento Psíquico / Comorbidade Psiquiátrica Sem Seguimento`,
+          category: `Vulnerabilidade Clínica`,
+          severity: `alta`,
+          evidence: `Alterações de humor e sono comprometem a autogestão da farmacoterapia crônica e exigem suporte interprofissional.`,
+          source: `Protocolo de Cuidado Farmacêutico na Atenção Especializada (MS)`,
+          suggestion: `Gerar Encaminhamento ao Serviço Social / Psicologia / Psiquiatria para articulação de rede e suporte familiar.`
+        });
+      }
+
+      if (c.flags.social || subj.includes(`estigma`) || subj.includes(`trabalho`) || subj.includes(`verem`)) {
+        prms.push({
+          id: `prm-social`,
+          title: `Barreira Social e Receio de Estigma no Ambiente de Trabalho`,
+          category: `Adesão / Sigilo`,
+          severity: `moderada`,
+          evidence: `Paciente evita tomar doses em público por medo de exposição do diagnóstico. Risco elevado de falhas em turnos noturnos.`,
+          source: `Diretrizes OMS de Aconselhamento Centrado na Pessoa & LGPD`,
+          suggestion: `Pactuar porta-comprimidos discreto, ajustar horário para momento privado e reforçar sigilo absoluto nas mensagens de telemonitoramento.`
+        });
+      }
+
+      if (c.litSchool === `baixo` || c.litHealth === `baixo` || c.litDigital === `baixo`) {
+        prms.push({
+          id: `prm-letramento`,
+          title: `Baixo Letramento em Saúde / Digital — Barreira de Compreensão`,
+          category: `Letramento & Acessibilidade`,
+          severity: c.litHealth === `baixo` ? `moderada` : `leve`,
+          evidence: `Perfil indica necessidade de simplificação textual na receita/orientação e priorização de mensagens de voz (áudio) com linguagem cotidiana.`,
+          source: `Literatura de Letramento em Saúde & Telemonitoramento Inclusivo (OMS)`,
+          suggestion: `Gerar Orientação ao Paciente em linguagem simples (frases curtas) e configurar bot do WhatsApp em modo Multimodal / Áudio.`
+        });
+      }
+
+      if (prms.length === 0) {
+        prms.push({
+          id: `prm-manutencao`,
+          title: `Acompanhamento Farmacoterapêutico de Rotina (Sem PRM Crítico)`,
+          category: `Monitoramento Preventivo`,
+          severity: `leve`,
+          evidence: `Dados registrados sem sinais imediatos de reação adversa grave ou interrupção terapêutica.`,
+          source: `${condInfo.pcdt}`,
+          suggestion: `Manter educação em saúde e telemonitoramento de baixa frequência (30 dias) para prevenir fadiga de alertas.`
+        });
+      }
+
+      return prms;
+    }
+
+    function computeRiskModel(c, prms) {
+      let prmPts = 0;
+      prms.forEach(p => {
+        if (p.id === `prm-manutencao`) return;
+        if (p.severity === `alta`) prmPts += 16;
+        else if (p.severity === `moderada`) prmPts += 10;
+        else prmPts += 5;
+      });
+      prmPts = Math.min(40, prmPts);
+
+      let litPts = 0;
+      if (c.litHealth === `baixo`) litPts += 14;
+      else if (c.litHealth === `moderado`) litPts += 7;
+      if (c.litSchool === `baixo`) litPts += 6;
+      else if (c.litSchool === `moderado`) litPts += 3;
+      if (c.litDigital === `baixo`) litPts += 5;
+      else if (c.litDigital === `moderado`) litPts += 2;
+      litPts = Math.min(25, litPts);
+
+      let psychoPts = 0;
+      if (c.flags.caps) psychoPts += 10;
+      if (c.flags.mental) psychoPts += 10;
+      if (c.flags.social) psychoPts += 8;
+      psychoPts = Math.min(25, psychoPts);
+
+      let regimenPts = 4;
+      if (c.condition === `tuberculose` || c.condition === `hiv`) regimenPts = 8;
+      if (c.condition === `hepatitec`) regimenPts = 10;
+
+      const total = Math.min(98, Math.max(8, prmPts + litPts + psychoPts + regimenPts));
+      let tier = `baixo`;
+      let recFreq = 30;
+      if (total >= 65) {
+        tier = `alto`;
+        recFreq = 7;
+      } else if (total >= 35) {
+        tier = `moderado`;
+        recFreq = 15;
+      }
+
+      const recModality = (c.litDigital === `baixo` || c.litSchool === `baixo`) ? `multimodal` : `texto`;
+
+      return {
+        total,
+        tier,
+        recFreq,
+        recModality,
+        breakdown: [
+          { label: `Severidade dos PRMs clínicos`, pts: prmPts, max: 40, color: `var(--error)` },
+          { label: `Barreiras de letramento (saúde/digital)`, pts: litPts, max: 25, color: `var(--data-3)` },
+          { label: `Gatilhos psicossociais (CAPS/Mental/Estigma)`, pts: psychoPts, max: 25, color: `var(--data-4)` },
+          { label: `Complexidade e janela do esquema SUS`, pts: regimenPts, max: 10, color: `var(--data-1)` }
+        ]
+      };
+    }
+
+    function generateDocText(type, state) {
+      const c = state.clinical;
+      const cond = CONDITION_LABELS[c.condition] ? CONDITION_LABELS[c.condition].name : c.condition;
+      const dateStr = `13/11/2026`;
+      const tierText = state.riskTier === `alto` ? `ALTO RISCO` : state.riskTier === `moderado` ? `RISCO MODERADO` : `BAIXO RISCO`;
+      const validatedList = state.prms.filter(p => state.validatedPrmIds.includes(p.id));
+      const activePrms = validatedList.length > 0 ? validatedList : state.prms;
+      const prmSummary = activePrms.map((p, i) => `${i + 1}. ${p.title} [Severidade: ${p.severity.toUpperCase()}] — ${p.suggestion}`).join(`\n`);
+
+      if (type === `prontuario`) {
+        return `EVOLUÇÃO FARMACÊUTICA CLÍNICA (MODELO SOAP) — SUS / FARMÁCIA ESCOLA\nData: ${dateStr} | Paciente: ${c.name} (${c.age} anos)\nCondição Monitorada: ${cond}\nEsquema Atual: ${c.meds}\n\n[S — SUBJETIVO]\n${c.subjective}\n\n[O — OBJETIVO]\n${c.objective}\nAvaliação de Letramento: Escolar (${c.litSchool}), Saúde (${c.litHealth}), Digital (${c.litDigital}).\n\n[A — AVALIAÇÃO FARMACOTERAPÊUTICA (ASSISTIDA POR RAG)]\nEstratificação de Risco de Não Adesão: ${tierText} (${state.riskScore}/100 pontos).\nProblemas Identificados e Validados:\n${prmSummary}\n\n[P — PLANO DE CUIDADO E TELEMONITORAMENTO]\n- Plano de telemonitoramento via canal discreto (WhatsApp) calibrado para ciclo de ${state.teleFrequency} dias (${state.teleModality}), evitando fadiga de mensagens e respeitando sigilo diagnóstico (LGPD).\n- Validação profissional em conformidade com a RDC 657/2022 (Anvisa).\n\nResponsável: ${c.pharmacistName} — ${c.pharmacistCrf}`;
+      }
+
+      if (type === `orientacao`) {
+        const simple = (c.litHealth === `baixo` || c.litSchool === `baixo`);
+        if (simple) {
+          return `GUIA SIMPLES DE CUIDADO COM SEU REMÉDIO\nPara: ${c.name} | Data: ${dateStr}\n\n1. COMO TOMAR TODO DIA:\nTome o seu remédio (${c.meds}) sempre no mesmo horário, junto com um copo de água.\nNão pare de tomar por conta própria, mesmo se estiver se sentindo bem.\n\n2. O QUE FAZER SE ESQUECER:\nSe lembrar no mesmo dia, tome assim que lembrar. Se já estiver perto da dose do dia seguinte, pule a esquecida e tome só a normal. Nunca tome dois juntos.\n\n3. SINAIS PARA AVISAR A FARMÁCIA:\nSe sentir enjoo forte, tontura, dor na barriga ou qualquer mal-estar diferente, responda nossa mensagem no WhatsApp. O farmacêutico vai falar direto com você.\n\n4. NOSSAS MENSAGENS NO WHATSAPP:\nVamos mandar uma mensagem ou áudio curto a cada ${state.teleFrequency} dias para saber como você está. Ninguém verá o nome do seu tratamento na mensagem.\n\nCom carinho, ${c.pharmacistName} (${c.pharmacistCrf})`;
+        }
+        return `PLANO DE ORIENTAÇÃO FARMACOTERAPÊUTICA AO PACIENTE\nPaciente: ${c.name} | Data: ${dateStr}\nTerapia: ${c.meds}\n\n1. Posologia e Adesão:\nMantenha a tomada regular diária para garantir eficácia clínica e evitar resistência terapêutica. Utilize alarmes ou associação a hábitos fixos.\n\n2. Manejo de Esquecimento e Eventos Adversos:\nEm caso de reação adversa persistente, não suspenda o esquema sem orientação. Acione o canal de telemonitoramento para avaliação farmacêutica imediata.\n\n3. Telemonitoramento Calibrado:\nAcompanhamento programado a cada ${state.teleFrequency} dias via WhatsApp institucional protegido por sigilo (LGPD).\n\n${c.pharmacistName} — ${c.pharmacistCrf}`;
+      }
+
+      if (type === `medico`) {
+        return `CARTA DE INTERVENÇÃO FARMACÊUTICA AO MÉDICO ASSISTENTE\nData: ${dateStr} | Unidade: Farmácia Escola — Rede SUS\nPaciente: ${c.name}, ${c.age} anos | Condição: ${cond}\nTerapia em uso: ${c.meds}\n\nPrezado(a) Dr(a).,\n\nDurante consulta farmacêutica clínica estruturada, identificamos os seguintes pontos que requerem avaliação médica compartilhada:\n\nDados Objetivos Relevantes:\n${c.objective}\n\nAchados Clínicos e Sugestões Farmacoterapêuticas:\n${prmSummary}\n\nSolicitamos gentilmente avaliação clínica para eventual ajuste posológico, solicitação de exames complementares ou manejo sintomático, visando segurança e conclusão do tratamento com cura/controle.\n\nColocamo-nos à disposição para discussão conjunta do caso.\nAtenciosamente,\n${c.pharmacistName} — ${c.pharmacistCrf}`;
+      }
+
+      if (type === `caps`) {
+        const triggerText = c.flags.caps
+          ? `Identificou-se relato de uso de álcool/outras substâncias associado a falhas de adesão nos fins de semana e risco aumentado de toxicidade orgânica.`
+          : `Encaminhamento preventivo para avaliação de suporte em saúde mental e álcool/drogas caso haja demanda identificada durante o seguimento.`;
+        return `FICHA DE ENCAMINHAMENTO INTERSETORIAL — CAPS / RAPS\nData: ${dateStr} | Origem: Cuidado Farmacêutico Clínico (SUS)\nPaciente: ${c.name}, ${c.age} anos\n\nAo Centro de Atenção Psicossocial (CAPS),\n\nEncaminhamos o(a) usuário(a) acima para acolhimento e cuidado compartilhado. O(a) paciente encontra-se em tratamento farmacoterapêutico para ${cond} (${c.meds}).\n\nMotivo do Encaminhamento:\n${triggerText}\n\nObjetivo da Articulação:\nFortalecer estratégias de redução de danos e suporte psicossocial contínuo para viabilizar a manutenção segura da terapia farmacológica e a prevenção de complicações clínicas.\n\nFarmacêutico(a) Responsável: ${c.pharmacistName} — ${c.pharmacistCrf}`;
+      }
+
+      return `ENCAMINHAMENTO AO SERVIÇO SOCIAL / PSICOLOGIA / PSIQUIATRIA\nData: ${dateStr} | Origem: Consultório Farmacêutico (SUS)\nPaciente: ${c.name}, ${c.age} anos\n\nÀ Equipe Multiprofissional (Serviço Social / Saúde Mental),\n\nSolicitamos acolhimento prioritário para o(a) usuário(a) em seguimento farmacoterapêutico para ${cond}.\n\nContexto Identificado na Consulta:\n${c.flags.mental ? `- Relato de sofrimento psíquico / comorbidade psiquiátrica sem acompanhamento regular no momento.\n` : ``}${c.flags.social ? `- Barreiras sociais e receio de estigma impactando a tomada regular da medicação.\n` : ``}- Estratificação de risco de não adesão: ${tierText} (${state.riskScore}/100 pts).\n- Letramento em saúde avaliado como ${c.litHealth}.\n\nApoio solicitado: escuta qualificada, vinculação à rede de proteção social/saúde mental e articulação familiar, quando autorizada pelo paciente.\n\nAtenciosamente,\n${c.pharmacistName} — ${c.pharmacistCrf}`;
+    }
+
+    function buildInitialChat(state) {
+      const firstName = (state.clinical.name || `Paciente`).split(` `)[0];
+      const useAudio = state.teleModality !== `texto`;
+      return [
+        {
+          id: `sys-1`,
+          sender: `system`,
+          text: `Canal iniciado após validação do plano pelo farmacêutico (${state.clinical.pharmacistName || 'Farmácia Escola'}). Ciclo calibrado: ${state.teleFrequency} dias. Sigilo diagnóstico LGPD ativo.`,
+          time: `Dia 1 • 09:00`
+        },
+        {
+          id: `bot-1`,
+          sender: `bot`,
+          isAudio: useAudio,
+          audioDuration: `0:24`,
+          text: `Olá, ${firstName}! Aqui é da equipe de cuidado da Farmácia Escola. Passando para saber como você tem se sentido nesta semana com a sua rotina de saúde. Está conseguindo seguir tudo tranquilamente ou surgiu alguma dúvida?`,
+          time: `Dia 1 • 09:01`
+        }
+      ];
+    }
+
+    function readInputsIntoState() {
+      const c = appState.clinical;
+      const getVal = id => { const el = document.getElementById(id); return el ? el.value : ``; };
+      const getChk = id => { const el = document.getElementById(id); return el ? el.checked : false; };
+
+      c.name = getVal(`pt-name`) || `Paciente`;
+      c.age = parseInt(getVal(`pt-age`), 10) || 40;
+      c.condition = getVal(`pt-condition`) || `hepatitec`;
+      c.meds = getVal(`pt-meds`) || ``;
+      c.subjective = getVal(`pt-subjective`) || ``;
+      c.objective = getVal(`pt-objective`) || ``;
+      c.flags = {
+        ram: getChk(`flag-ram`),
+        irregular: getChk(`flag-irregular`),
+        renal: getChk(`flag-renal`),
+        caps: getChk(`flag-caps`),
+        mental: getChk(`flag-mental`),
+        social: getChk(`flag-social`)
+      };
+      c.litSchool = getVal(`lit-school`) || `moderado`;
+      c.litHealth = getVal(`lit-health`) || `moderado`;
+      c.litDigital = getVal(`lit-digital`) || `moderado`;
+    }
+
+    function writeStateToInputs() {
+      const c = appState.clinical;
+      const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+      const setChk = (id, v) => { const el = document.getElementById(id); if (el) el.checked = !!v; };
+
+      setVal(`pt-name`, c.name);
+      setVal(`pt-age`, c.age);
+      setVal(`pt-condition`, c.condition);
+      setVal(`pt-meds`, c.meds);
+      setVal(`pt-subjective`, c.subjective);
+      setVal(`pt-objective`, c.objective);
+      setChk(`flag-ram`, c.flags.ram);
+      setChk(`flag-irregular`, c.flags.irregular);
+      setChk(`flag-renal`, c.flags.renal);
+      setChk(`flag-caps`, c.flags.caps);
+      setChk(`flag-mental`, c.flags.mental);
+      setChk(`flag-social`, c.flags.social);
+      setVal(`lit-school`, c.litSchool);
+      setVal(`lit-health`, c.litHealth);
+      setVal(`lit-digital`, c.litDigital);
+      setVal(`pharmacist-name`, c.pharmacistName);
+      setVal(`pharmacist-crf`, c.pharmacistCrf);
+    }
+
+    function runRagAnalysis(showFeedback) {
+      appState.prms = computePrmsFromClinical(appState.clinical);
+      const validSet = new Set(appState.validatedPrmIds);
+      appState.validatedPrmIds = appState.prms.map(p => p.id).filter(id => validSet.has(id));
+
+      const risk = computeRiskModel(appState.clinical, appState.prms);
+      appState.riskScore = risk.total;
+      appState.riskTier = risk.tier;
+      if (!appState.telePlanApproved) {
+        appState.teleFrequency = risk.recFreq;
+        appState.teleModality = risk.recModality;
+      }
+
+      renderAll();
+
+      if (showFeedback) {
+        const fb = document.getElementById(`rag-run-feedback`);
+        if (fb) {
+          fb.textContent = `Análise RAG concluída: ${appState.prms.length} ponto(s) cruzado(s) com o banco científico.`;
+          setTimeout(() => { if (fb) fb.textContent = ``; }, 3500);
+        }
+      }
+      persistAppState();
+    }
+
+    function handleClinicalChange() {
+      readInputsIntoState();
+      appState.telePlanApproved = false;
+      appState.docEdits = {};
+      appState.signedDocs = {};
+      runRagAnalysis(false);
+    }
+
+    function togglePrmValidation(prmId) {
+      const idx = appState.validatedPrmIds.indexOf(prmId);
+      if (idx >= 0) {
+        appState.validatedPrmIds.splice(idx, 1);
+      } else {
+        appState.validatedPrmIds.push(prmId);
+      }
+      appState.docEdits = {};
+      renderAll();
+      persistAppState();
+    }
+
+    function validateAllPrms() {
+      appState.validatedPrmIds = appState.prms.map(p => p.id);
+      appState.docEdits = {};
+      renderAll();
+      persistAppState();
+    }
+
+    function switchModule(num) {
+      appState.activeModule = num;
+      [1, 2, 3].forEach(n => {
+        const sec = document.getElementById(`module-${n}`);
+        const tab = document.getElementById(`tab-btn-${n}`);
+        if (sec) sec.classList.toggle(`active`, n === num);
+        if (tab) tab.classList.toggle(`active`, n === num);
+      });
+      renderAll();
+      persistAppState();
+    }
+
+    function loadPreset(key) {
+      appState.activePreset = key;
+      appState.clinical = clonePreset(key);
+      appState.prms = computePrmsFromClinical(appState.clinical);
+      appState.validatedPrmIds = appState.prms.slice(0, 2).map(p => p.id);
+      const risk = computeRiskModel(appState.clinical, appState.prms);
+      appState.riskScore = risk.total;
+      appState.riskTier = risk.tier;
+      appState.teleFrequency = risk.recFreq;
+      appState.teleModality = risk.recModality;
+      appState.telePlanApproved = true;
+      appState.docEdits = {};
+      appState.signedDocs = {};
+      appState.cycleDay = 1;
+      appState.escalationActive = false;
+      appState.escalationReason = ``;
+      appState.audioModeActive = (risk.recModality !== `texto`);
+      appState.chat = buildInitialChat(appState);
+
+      writeStateToInputs();
+      renderAll();
+      persistAppState();
+    }
+
+    function resetPrototype(btn) {
+      if (btn && btn.dataset.armed !== `true`) {
+        btn.dataset.armed = `true`;
+        btn.textContent = `Confirmar restauração`;
+        setTimeout(() => {
+          if (btn && btn.dataset.armed === `true`) {
+            btn.dataset.armed = `false`;
+            btn.textContent = `Restaurar Caso Padrão`;
+          }
+        }, 3200);
+        return;
+      }
+      if (btn) {
+        btn.dataset.armed = `false`;
+        btn.textContent = `Restaurar Caso Padrão`;
+      }
+      appState.activeModule = 1;
+      loadPreset(`hepatitec`);
+    }
+
+    function updateTelePlanFromControl() {
+      const freqEl = document.getElementById(`tele-frequency`);
+      const modEl = document.getElementById(`tele-modality`);
+      if (freqEl) appState.teleFrequency = parseInt(freqEl.value, 10) || 7;
+      if (modEl) appState.teleModality = modEl.value || `multimodal`;
+      appState.telePlanApproved = false;
+      appState.audioModeActive = (appState.teleModality !== `texto`);
+      renderAll();
+      persistAppState();
+    }
+
+    function approveTelePlan() {
+      appState.telePlanApproved = true;
+      appState.chat = buildInitialChat(appState);
+      appState.cycleDay = 1;
+      appState.escalationActive = false;
+      const fb = document.getElementById(`tele-plan-feedback`);
+      if (fb) {
+        fb.textContent = `Plano validado! Bot configurado para ciclo de ${appState.teleFrequency} dias (${appState.teleModality}).`;
+        setTimeout(() => { if (fb) fb.textContent = ``; }, 3500);
+      }
+      renderAll();
+      persistAppState();
+    }
+
+    function selectDocumentType(docType) {
+      appState.activeDocType = docType;
+      renderDocuments();
+      persistAppState();
+    }
+
+    function handlePharmacistEdit() {
+      const nEl = document.getElementById(`pharmacist-name`);
+      const cEl = document.getElementById(`pharmacist-crf`);
+      if (nEl) appState.clinical.pharmacistName = nEl.value;
+      if (cEl) appState.clinical.pharmacistCrf = cEl.value;
+      persistAppState();
+    }
+
+    function handleDocManualEdit() {
+      const area = document.getElementById(`doc-content-area`);
+      if (!area) return;
+      appState.docEdits[appState.activeDocType] = area.value;
+      appState.signedDocs[appState.activeDocType] = false;
+      renderDocumentValidationChip();
+      persistAppState();
+    }
+
+    function regenerateCurrentDocument() {
+      delete appState.docEdits[appState.activeDocType];
+      appState.signedDocs[appState.activeDocType] = false;
+      renderDocuments();
+      const fb = document.getElementById(`doc-feedback`);
+      if (fb) {
+        fb.textContent = `Documento atualizado com os dados clínicos e validações mais recentes.`;
+        setTimeout(() => { if (fb) fb.textContent = ``; }, 3000);
+      }
+      persistAppState();
+    }
+
+    function signCurrentDocument() {
+      const area = document.getElementById(`doc-content-area`);
+      if (area) appState.docEdits[appState.activeDocType] = area.value;
+      appState.signedDocs[appState.activeDocType] = true;
+      renderDocumentValidationChip();
+      const fb = document.getElementById(`doc-feedback`);
+      if (fb) {
+        fb.textContent = `Documento validado e assinado por ${appState.clinical.pharmacistName} (${appState.clinical.pharmacistCrf}).`;
+        setTimeout(() => { if (fb) fb.textContent = ``; }, 3500);
+      }
+      persistAppState();
+    }
+
+    function copyCurrentDocument() {
+      const area = document.getElementById(`doc-content-area`);
+      if (!area) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(area.value).catch(() => {});
+      }
+      const fb = document.getElementById(`doc-feedback`);
+      if (fb) {
+        fb.textContent = `Texto copiado para a área de transferência.`;
+        setTimeout(() => { if (fb) fb.textContent = ``; }, 2500);
+      }
+    }
+
+    function exportCurrentDocument() {
+      const area = document.getElementById(`doc-content-area`);
+      if (!area) return;
+      const fname = `${appState.activeDocType}_${(appState.clinical.name || 'paciente').toLowerCase().replace(/[^a-z0-9]+/g, '_')}.txt`;
+      if (window.notebookAppApi && typeof window.notebookAppApi.triggerFileDownload === `function`) {
+        window.notebookAppApi.triggerFileDownload({
+          content: area.value,
+          contentType: `text/plain`,
+          encoding: `UTF-8`,
+          filename: fname
+        });
+      }
+      const fb = document.getElementById(`doc-feedback`);
+      if (fb) {
+        fb.textContent = `Exportação iniciada (${fname}).`;
+        setTimeout(() => { if (fb) fb.textContent = ``; }, 2500);
+      }
+    }
+
+    /* WhatsApp Simulation */
+    function simulateNextCycle() {
+      appState.cycleDay += appState.teleFrequency;
+      const firstName = (appState.clinical.name || `Paciente`).split(` `)[0];
+      const useAudio = appState.audioModeActive;
+      const messagesByCycle = [
+        `Olá, ${firstName}! Tudo bem? Faz ${appState.teleFrequency} dias desde o nosso último contato. Como tem sido o uso diário da sua medicação nesta semana?`,
+        `Oi, ${firstName}! Passando no nosso acompanhamento programado (Dia ${appState.cycleDay}). Você sentiu algum desconforto ou precisou faltar algum dia de tomada?`,
+        `Olá, ${firstName}! Estamos acompanhando seu progresso. Lembre-se de que concluir todo o ciclo é essencial para sua saúde. Precisa agendar retirada ou tirar alguma dúvida?`
+      ];
+      const idx = Math.floor((appState.cycleDay / appState.teleFrequency)) % messagesByCycle.length;
+      appState.chat.push({
+        id: `sys-${Date.now()}`,
+        sender: `system`,
+        text: `Disparo automático calibrado — Dia ${appState.cycleDay} (Intervalo de ${appState.teleFrequency} dias).`,
+        time: `Dia ${appState.cycleDay} • 09:00`
+      });
+      appState.chat.push({
+        id: `bot-${Date.now() + 1}`,
+        sender: `bot`,
+        isAudio: useAudio,
+        audioDuration: `0:19`,
+        text: messagesByCycle[idx],
+        time: `Dia ${appState.cycleDay} • 09:01`
+      });
+      renderChat();
+      persistAppState();
+    }
+
+    function toggleAudioView() {
+      appState.audioModeActive = !appState.audioModeActive;
+      appState.teleModality = appState.audioModeActive ? `multimodal` : `texto`;
+      renderChat();
+      renderSummaryKpis();
+      persistAppState();
+    }
+
+    function togglePlayAudio(msgId) {
+      appState.playingAudioId = (appState.playingAudioId === msgId) ? null : msgId;
+      renderChat();
+    }
+
+    function triggerQuickPatientReply(type) {
+      const map = {
+        ok: `Estou tomando certinho todos os dias, sem problemas.`,
+        esqueci: `Esqueci de tomar a dose de ontem à noite, o que eu faço?`,
+        ram: `Estou com muita náusea e tontura forte depois do remédio.`,
+        abandono: `Não quero mais tomar isso, estou pensando em parar.`
+      };
+      processPatientMessage(map[type] || map.ok);
+    }
+
+    function handleWaKeydown(e) {
+      if (e.key === `Enter`) {
+        e.preventDefault();
+        sendPatientMessage();
+      }
+    }
+
+    function sendPatientMessage() {
+      const input = document.getElementById(`wa-patient-input`);
+      if (!input) return;
+      const txt = input.value.trim();
+      if (!txt) return;
+      input.value = ``;
+      processPatientMessage(txt);
+    }
+
+    function processPatientMessage(text) {
+      const nowTime = `Dia ${appState.cycleDay} • 14:12`;
+      appState.chat.push({
+        id: `pt-${Date.now()}`,
+        sender: `patient`,
+        text: text,
+        time: nowTime
+      });
+
+      const lower = text.toLowerCase();
+      const sensitiveKeywords = [`náusea`, `nausea`, `enjoo`, `tontura`, `dor`, `vômito`, `vomito`, `alergia`, `febre`, `mal`, `parar`, `desistir`, `não quero`, `nao quero`, `reação`, `reacao`, `sangramento`, `mancha`];
+      const isSensitive = sensitiveKeywords.some(kw => lower.includes(kw));
+
+      if (isSensitive) {
+        const isAbandon = lower.includes(`parar`) || lower.includes(`desistir`) || lower.includes(`não quero`) || lower.includes(`nao quero`);
+        appState.escalationActive = true;
+        appState.escalationReason = isAbandon
+          ? `Risco iminente de abandono de tratamento detectado no relato do paciente.`
+          : `Relato de possível Reação Adversa a Medicamento (RAM) / sintoma clínico sensível.`;
+
+        appState.chat.push({
+          id: `bot-lock-${Date.now() + 1}`,
+          sender: `bot`,
+          isAudio: appState.audioModeActive,
+          audioDuration: `0:16`,
+          text: `Recebi uma informação muito importante sua e não quero te passar nada sem certeza. Já chamei nosso farmacêutico clínico agora mesmo para conversar diretamente com você por aqui.`,
+          time: `Dia ${appState.cycleDay} • 14:12`
+        });
+        appState.chat.push({
+          id: `sys-lock-${Date.now() + 2}`,
+          sender: `system`,
+          text: `TRAVA DE SEGURANÇA ACIONADA (RDC 657/2022) — Bot pausado. Aguardando intervenção humana.`,
+          time: `Dia ${appState.cycleDay} • 14:12`
+        });
+
+        const replyBox = document.getElementById(`pharmacist-chat-reply`);
+        if (replyBox) {
+          replyBox.value = isAbandon
+            ? `Olá! Aqui é o ${appState.clinical.pharmacistName}. Vi que está difícil continuar agora. Não suspenda ainda — vamos conversar hoje para ajustar o que estiver te incomodando e buscar a melhor solução juntos.`
+            : `Olá! Aqui é o ${appState.clinical.pharmacistName}. Vi seu relato sobre esse desconforto após a dose. Vamos avaliar a intensidade juntos agora e, se necessário, já alinho com seu médico para proteger seu tratamento.`;
+        }
+      } else if (lower.includes(`esquec`) || lower.includes(`atras`)) {
+        appState.chat.push({
+          id: `bot-ok-${Date.now() + 1}`,
+          sender: `bot`,
+          isAudio: appState.audioModeActive,
+          audioDuration: `0:22`,
+          text: `Orientação validada: se lembrou no mesmo dia, tome a dose assim que lembrar. Se já estiver perto do horário da dose de hoje, pule a de ontem e tome apenas a de hoje (nunca tome duas juntas). Se esquecer mais de 2 dias seguidos, me avise para chamar o farmacêutico.`,
+          time: `Dia ${appState.cycleDay} • 14:13`
+        });
+      } else {
+        appState.chat.push({
+          id: `bot-ok-${Date.now() + 1}`,
+          sender: `bot`,
+          isAudio: appState.audioModeActive,
+          audioDuration: `0:14`,
+          text: `Que ótima notícia! Registrei sua adesão positiva no sistema. Seu próximo contato programado acontecerá em ${appState.teleFrequency} dias. Seguimos juntos no seu cuidado.`,
+          time: `Dia ${appState.cycleDay} • 14:13`
+        });
+      }
+
+      renderChat();
+      renderSupervisionBox();
+      persistAppState();
+    }
+
+    function sendPharmacistIntervention() {
+      const box = document.getElementById(`pharmacist-chat-reply`);
+      if (!box) return;
+      const msg = box.value.trim();
+      if (!msg) return;
+
+      appState.chat.push({
+        id: `pharm-${Date.now()}`,
+        sender: `pharmacist`,
+        senderLabel: appState.clinical.pharmacistName || `Farmacêutico Clínico`,
+        text: msg,
+        time: `Dia ${appState.cycleDay} • 14:15`
+      });
+      appState.escalationActive = false;
+      appState.escalationReason = ``;
+      box.value = ``;
+
+      renderChat();
+      renderSupervisionBox();
+      persistAppState();
+    }
+
+    /* Renderers */
+    function renderAll() {
+      renderPresetButtons();
+      renderSummaryKpis();
+      renderRagList();
+      renderRiskSection();
+      renderDocuments();
+      renderChat();
+      renderSupervisionBox();
+      renderCadenceTimeline();
+      if (window.lucide && typeof window.lucide.createIcons === `function`) {
+        window.lucide.createIcons();
+      }
+    }
+
+    function renderPresetButtons() {
+      [`hepatitec`, `hepatiteb`, `hiv`, `novo`].forEach(key => {
+        const btn = document.getElementById(`preset-btn-${key}`);
+        if (btn) btn.classList.toggle(`active`, appState.activePreset === key);
+      });
+    }
+
+    function renderSummaryKpis() {
+      const prmCountEl = document.getElementById(`kpi-prm-count`);
+      const prmCapEl = document.getElementById(`kpi-prm-caption`);
+      const prmCard = document.getElementById(`kpi-card-prm`);
+      const highCount = appState.prms.filter(p => p.severity === `alta`).length;
+
+      if (prmCountEl) prmCountEl.textContent = `${appState.prms.length} ponto(s)`;
+      if (prmCapEl) {
+        prmCapEl.textContent = highCount > 0 ? `${highCount} de severidade alta` : `Sem severidade alta`;
+        prmCapEl.className = `kpi-caption ${highCount > 0 ? 'alert' : 'ok'}`;
+      }
+      if (prmCard) prmCard.dataset.status = highCount > 0 ? `alert` : `ok`;
+
+      const riskScoreEl = document.getElementById(`kpi-risk-score`);
+      const riskTierEl = document.getElementById(`kpi-risk-tier`);
+      const riskCard = document.getElementById(`kpi-card-risk`);
+      const tierLabel = appState.riskTier === `alto` ? `Alto Risco` : appState.riskTier === `moderado` ? `Risco Moderado` : `Baixo Risco`;
+      const tierStatus = appState.riskTier === `alto` ? `alert` : appState.riskTier === `moderado` ? `watch` : `ok`;
+
+      if (riskScoreEl) riskScoreEl.textContent = `${appState.riskScore} / 100`;
+      if (riskTierEl) {
+        riskTierEl.textContent = tierLabel;
+        riskTierEl.className = `kpi-caption ${tierStatus}`;
+      }
+      if (riskCard) riskCard.dataset.status = tierStatus;
+
+      const freqDaysEl = document.getElementById(`kpi-freq-days`);
+      const freqModeEl = document.getElementById(`kpi-freq-mode`);
+      if (freqDaysEl) freqDaysEl.textContent = `A cada ${appState.teleFrequency} dias`;
+      if (freqModeEl) {
+        freqModeEl.textContent = appState.teleModality === `multimodal`
+          ? `Multimodal (Texto + Voz)`
+          : appState.teleModality === `audio` ? `Áudio Prioritário` : `Texto Simplificado`;
+      }
+
+      const humanValEl = document.getElementById(`kpi-human-status`);
+      const humanCapEl = document.getElementById(`kpi-human-caption`);
+      const humanCard = document.getElementById(`kpi-card-human`);
+      const totalPrms = appState.prms.length;
+      const valPrms = appState.validatedPrmIds.length;
+      if (humanValEl) humanValEl.textContent = `${valPrms} / ${totalPrms} validados`;
+      if (humanCapEl) {
+        humanCapEl.textContent = valPrms === totalPrms && totalPrms > 0
+          ? `Condutas validadas pelo farmacêutico`
+          : `Validação humana pendente`;
+        humanCapEl.className = `kpi-caption ${valPrms === totalPrms ? 'ok' : 'watch'}`;
+      }
+      if (humanCard) humanCard.dataset.status = valPrms === totalPrms ? `ok` : `watch`;
+
+      const tabBadge2 = document.getElementById(`tab-badge-2`);
+      if (tabBadge2) {
+        tabBadge2.textContent = tierLabel;
+        tabBadge2.dataset.status = tierStatus;
+      }
+      const tabBadge3 = document.getElementById(`tab-badge-3`);
+      if (tabBadge3) {
+        tabBadge3.textContent = appState.escalationActive ? `Alerta Ativo` : `${appState.teleFrequency} dias`;
+        tabBadge3.dataset.status = appState.escalationActive ? `alert` : `ok`;
+      }
+    }
+
+    function renderRagList() {
+      const container = document.getElementById(`rag-results-container`);
+      if (!container) return;
+
+      const condInfo = CONDITION_LABELS[appState.clinical.condition] || CONDITION_LABELS.hepatitec;
+      const kbChip = document.getElementById(`rag-kb-chip`);
+      if (kbChip) kbChip.textContent = condInfo.pcdt.split(`(`)[0].trim();
+
+      container.innerHTML = appState.prms.map(p => {
+        const isValid = appState.validatedPrmIds.includes(p.id);
+        const sevStatus = p.severity === `alta` ? `alert` : p.severity === `moderada` ? `watch` : `info`;
+        const sevLabel = p.severity === `alta` ? `Severidade Alta` : p.severity === `moderada` ? `Severidade Moderada` : `Severidade Leve`;
+
+        return `
+          <article class="prm-card ${isValid ? 'validated' : ''}" data-severity="${p.severity}">
+            <div class="prm-top">
+              <div style="display: grid; gap: var(--space-xs);">
+                <div class="prm-meta">
+                  <span class="chip" data-status="${sevStatus}">${sevLabel}</span>
+                  <span class="chip" data-status="neutral">${p.category}</span>
+                  ${isValid ? '<span class="chip" data-status="ok">Validado pelo Farmacêutico</span>' : ''}
+                </div>
+                <h3>${p.title}</h3>
+              </div>
+              <button type="button" class="btn btn-sm ${isValid ? 'btn-ok' : 'btn-primary'}" onclick="togglePrmValidation('${p.id}')">
+                ${isValid ? 'Validado (Desfazer)' : 'Validar Conduta'}
+              </button>
+            </div>
+            <p style="margin: 0; font-size: 0.9rem;"><strong>Cruzamento Clínico:</strong> ${p.evidence}</p>
+            <p style="margin: 0; font-size: 0.9rem;"><strong>Conduta Sugerida:</strong> ${p.suggestion}</p>
+            <div class="rag-source-box">
+              <strong>Fonte RAG (Embedding):</strong> ${p.source}
+            </div>
+          </article>
+        `;
+      }).join(``);
+
+      const gateText = document.getElementById(`validation-gate-text`);
+      if (gateText) {
+        gateText.textContent = `${appState.validatedPrmIds.length} de ${appState.prms.length} sugestão(ões) validada(s) pelo profissional.`;
+      }
+    }
+
+    function renderRiskSection() {
+      const risk = computeRiskModel(appState.clinical, appState.prms);
+      const scoreBox = document.getElementById(`risk-score-box`);
+      const scoreDisp = document.getElementById(`risk-score-display`);
+      const tierLbl = document.getElementById(`risk-tier-label`);
+      const tierChip = document.getElementById(`risk-tier-chip`);
+      const rationaleEl = document.getElementById(`risk-clinical-rationale`);
+
+      const tierNames = {
+        baixo: `Baixo Risco de Não Adesão`,
+        moderado: `Risco Moderado de Não Adesão`,
+        alto: `Alto Risco de Não Adesão`
+      };
+      const statusMap = { baixo: `ok`, moderado: `watch`, alto: `alert` };
+
+      if (scoreBox) scoreBox.dataset.tier = risk.tier;
+      if (scoreDisp) scoreDisp.textContent = `${risk.total} / 100`;
+      if (tierLbl) tierLbl.textContent = tierNames[risk.tier];
+      if (tierChip) {
+        tierChip.textContent = risk.tier === `alto` ? `Alto Risco` : risk.tier === `moderado` ? `Risco Moderado` : `Baixo Risco`;
+        tierChip.dataset.status = statusMap[risk.tier];
+      }
+      if (rationaleEl) {
+        rationaleEl.textContent = `Periodicidade recomendada pela estratificação: a cada ${risk.recFreq} dias (letramento em saúde: ${appState.clinical.litHealth}).`;
+      }
+
+      const freqSel = document.getElementById(`tele-frequency`);
+      const modSel = document.getElementById(`tele-modality`);
+      if (freqSel) freqSel.value = String(appState.teleFrequency);
+      if (modSel) modSel.value = appState.teleModality;
+
+      /* Target Reference-Range SVG */
+      const gaugeEl = document.getElementById(`risk-gauge-svg`);
+      if (gaugeEl) {
+        const markerX = 20 + (risk.total / 100) * 560;
+        const markerColor = risk.tier === `alto` ? `var(--error)` : risk.tier === `moderado` ? `var(--data-3)` : `var(--tertiary)`;
+        gaugeEl.innerHTML = `
+          <svg viewBox="0 0 600 84" width="100%" height="84" role="img" aria-label="Medidor de risco com faixa de segurança verde de 0 a 34 pontos; valor atual ${risk.total} pontos">
+            <rect x="20" y="22" width="196" height="24" rx="4" fill="var(--tertiary)" fill-opacity="0.16"></rect>
+            <rect x="216" y="22" width="168" height="24" fill="var(--data-3)" fill-opacity="0.18"></rect>
+            <rect x="384" y="22" width="196" height="24" rx="4" fill="var(--error)" fill-opacity="0.16"></rect>
+            <line x1="216" y1="16" x2="216" y2="52" stroke="var(--outline)" stroke-dasharray="3 3" stroke-width="1.5"></line>
+            <line x1="384" y1="16" x2="384" y2="52" stroke="var(--outline)" stroke-dasharray="3 3" stroke-width="1.5"></line>
+            <text x="118" y="14" text-anchor="middle" font-family="var(--font-label)" font-size="11" font-weight="600" fill="var(--secondary)">Faixa Segura (0–34)</text>
+            <text x="300" y="14" text-anchor="middle" font-family="var(--font-label)" font-size="11" font-weight="600" fill="var(--on-surface-variant)">Moderado (35–64)</text>
+            <text x="482" y="14" text-anchor="middle" font-family="var(--font-label)" font-size="11" font-weight="600" fill="var(--error)">Alto Risco (65–100)</text>
+            <line x1="20" y1="34" x2="${markerX}" y2="34" stroke="${markerColor}" stroke-width="4" stroke-linecap="round"></line>
+            <circle cx="${markerX}" cy="34" r="9" fill="${markerColor}" stroke="var(--background)" stroke-width="2.5"></circle>
+            <text x="${markerX}" y="70" text-anchor="middle" font-family="var(--font-headline)" font-size="13" font-weight="800" fill="var(--on-surface)">${risk.total} pts</text>
+          </svg>
+        `;
+      }
+
+      const barsEl = document.getElementById(`risk-factors-bars`);
+      if (barsEl) {
+        barsEl.innerHTML = risk.breakdown.map(b => {
+          const pct = Math.round((b.pts / b.max) * 100);
+          return `
+            <div class="factor-row">
+              <div class="factor-label-row">
+                <span>${b.label}</span>
+                <span class="tabular">${b.pts} / ${b.max} pts</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" style="width: ${pct}%; background: ${b.color};"></div>
+              </div>
+            </div>
+          `;
+        }).join(``);
+      }
+    }
+
+    function renderDocuments() {
+      const types = [`prontuario`, `orientacao`, `medico`, `caps`, `social`];
+      types.forEach(t => {
+        const btn = document.getElementById(`doc-btn-${t}`);
+        if (btn) btn.classList.toggle(`active`, appState.activeDocType === t);
+      });
+
+      const capsBtn = document.getElementById(`doc-btn-caps`);
+      if (capsBtn) {
+        capsBtn.textContent = appState.clinical.flags.caps
+          ? `Encaminhamento CAPS (Gatilho Ativo)`
+          : `Encaminhamento CAPS`;
+      }
+      const socialBtn = document.getElementById(`doc-btn-social`);
+      if (socialBtn) {
+        socialBtn.textContent = (appState.clinical.flags.mental || appState.clinical.flags.social)
+          ? `Serviço Social / Psico (Gatilho Ativo)`
+          : `Serviço Social / Psicologia`;
+      }
+
+      const area = document.getElementById(`doc-content-area`);
+      if (area) {
+        const content = appState.docEdits[appState.activeDocType] !== undefined
+          ? appState.docEdits[appState.activeDocType]
+          : generateDocText(appState.activeDocType, appState);
+        area.value = content;
+      }
+      renderDocumentValidationChip();
+    }
+
+    function renderDocumentValidationChip() {
+      const chip = document.getElementById(`doc-validation-chip`);
+      if (!chip) return;
+      const isSigned = !!appState.signedDocs[appState.activeDocType];
+      chip.textContent = isSigned ? `Validado e Assinado` : `Aguardando Assinatura`;
+      chip.dataset.status = isSigned ? `ok` : `watch`;
+    }
+
+    function renderChat() {
+      const log = document.getElementById(`wa-chat-log`);
+      const cadBanner = document.getElementById(`wa-cadence-banner`);
+      const modBanner = document.getElementById(`wa-modality-banner`);
+      const stepLbl = document.getElementById(`cycle-step-label`);
+      const statusLine = document.getElementById(`wa-status-line`);
+
+      if (cadBanner) cadBanner.textContent = `Frequência: A cada ${appState.teleFrequency} dias`;
+      if (modBanner) modBanner.textContent = appState.audioModeActive ? `Modo: Áudio + Texto` : `Modo: Texto Simples`;
+      if (stepLbl) stepLbl.textContent = `+${appState.teleFrequency} dias`;
+      if (statusLine) {
+        statusLine.textContent = appState.escalationActive
+          ? `Bot Pausado • Farmacêutico Chamado`
+          : `Bot Supervisionado • Online`;
+      }
+
+      if (!log) return;
+      log.innerHTML = appState.chat.map(m => {
+        if (m.sender === `system`) {
+          return `<div class="wa-bubble system">${m.text}</div>`;
+        }
+        const cls = m.sender === `patient` ? `patient` : m.sender === `pharmacist` ? `pharmacist` : `bot`;
+        const senderTag = m.sender === `pharmacist`
+          ? `<span class="wa-sender">Intervenção Direta • ${m.senderLabel || 'Farmacêutico'}</span>`
+          : m.sender === `bot`
+            ? `<span class="wa-sender">Assistente Validado</span>`
+            : ``;
+
+        let bodyHtml = `<span>${m.text}</span>`;
+        if (m.isAudio && m.sender === `bot`) {
+          const isPlaying = appState.playingAudioId === m.id;
+          bodyHtml = `
+            <div class="wa-audio-box">
+              <div class="wa-audio-row">
+                <button type="button" class="btn btn-sm ${isPlaying ? 'btn-primary' : 'btn-secondary'}" onclick="togglePlayAudio('${m.id}')">
+                  ${isPlaying ? 'Pausar Áudio' : 'Ouvir Áudio'} (${m.audioDuration || '0:18'})
+                </button>
+                <svg class="wa-wave" viewBox="0 0 120 22" aria-hidden="true">
+                  <rect x="2" y="7" width="4" height="8" rx="2" fill="${isPlaying ? 'var(--primary)' : 'var(--outline)'}"></rect>
+                  <rect x="10" y="3" width="4" height="16" rx="2" fill="${isPlaying ? 'var(--primary)' : 'var(--outline)'}"></rect>
+                  <rect x="18" y="6" width="4" height="10" rx="2" fill="${isPlaying ? 'var(--primary)' : 'var(--outline)'}"></rect>
+                  <rect x="26" y="2" width="4" height="18" rx="2" fill="${isPlaying ? 'var(--primary)' : 'var(--outline)'}"></rect>
+                  <rect x="34" y="8" width="4" height="6" rx="2" fill="var(--outline)"></rect>
+                  <rect x="42" y="4" width="4" height="14" rx="2" fill="var(--outline)"></rect>
+                  <rect x="50" y="6" width="4" height="10" rx="2" fill="var(--outline)"></rect>
+                  <rect x="58" y="3" width="4" height="16" rx="2" fill="var(--outline)"></rect>
+                  <rect x="66" y="7" width="4" height="8" rx="2" fill="var(--outline)"></rect>
+                  <rect x="74" y="5" width="4" height="12" rx="2" fill="var(--outline)"></rect>
+                  <rect x="82" y="8" width="4" height="6" rx="2" fill="var(--outline)"></rect>
+                  <rect x="90" y="4" width="4" height="14" rx="2" fill="var(--outline)"></rect>
+                </svg>
+              </div>
+              <div style="font-size: 0.84rem; color: var(--on-surface);">
+                <strong>Transcrição acessível:</strong> ${m.text}
+              </div>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="wa-bubble ${cls}">
+            ${senderTag}
+            ${bodyHtml}
+            <span class="wa-time">${m.time}</span>
+          </div>
+        `;
+      }).join(``);
+
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function renderSupervisionBox() {
+      const chip = document.getElementById(`bot-safety-chip`);
+      const box = document.getElementById(`escalation-box`);
+      const replyPanel = document.getElementById(`pharmacist-reply-panel`);
+
+      if (appState.escalationActive) {
+        if (chip) {
+          chip.textContent = `Intervenção Humana Obrigatória`;
+          chip.dataset.status = `alert`;
+        }
+        if (box) {
+          box.dataset.status = `alert`;
+          box.innerHTML = `
+            <strong>TRAVA DE SEGURANÇA ATIVADA — BOT PAUSADO</strong>
+            <span>${appState.escalationReason} Por diretriz ética e normativa (RDC 657/2022), o assistente automatizado não responde condutas clínicas sensíveis. Assuma a conversa abaixo.</span>
+          `;
+        }
+        if (replyPanel) replyPanel.style.display = `grid`;
+      } else {
+        if (chip) {
+          chip.textContent = `Monitoramento Normal`;
+          chip.dataset.status = `ok`;
+        }
+        if (box) {
+          box.dataset.status = `ok`;
+          box.innerHTML = `
+            <strong>Sistema em Cadência Programada</strong>
+            <span>O chatbot envia apenas mensagens previamente validadas pelo farmacêutico e omite o diagnóstico do paciente (sigilo LGPD). Relatos de reação adversa ou abandono acionam alerta imediato.</span>
+          `;
+        }
+        if (replyPanel) replyPanel.style.display = `none`;
+      }
+    }
+
+    function renderCadenceTimeline() {
+      const el = document.getElementById(`cadence-svg-container`);
+      const sumChip = document.getElementById(`cadence-summary-chip`);
+      const freq = appState.teleFrequency || 7;
+      const monthlyCount = freq === 7 ? 4 : freq === 15 ? 2 : 1;
+
+      if (sumChip) sumChip.textContent = `${monthlyCount} contato(s) / mês`;
+      if (!el) return;
+
+      const points = [];
+      for (let d = 1; d <= 30; d += freq) {
+        points.push(d);
+      }
+
+      const dailyDots = [];
+      for (let d = 1; d <= 30; d++) {
+        const x = 40 + ((d - 1) / 29) * 520;
+        dailyDots.push(`<circle cx="${x.toFixed(1)}" cy="42" r="3.5" fill="var(--data-context)"></circle>`);
+      }
+
+      const calibratedDots = points.map(d => {
+        const x = 40 + ((d - 1) / 29) * 520;
+        return `
+          <circle cx="${x.toFixed(1)}" cy="96" r="7" fill="var(--primary)" stroke="var(--background)" stroke-width="2"></circle>
+          <text x="${x.toFixed(1)}" y="122" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--on-surface)">D${d}</text>
+        `;
+      }).join(``);
+
+      el.innerHTML = `
+        <svg viewBox="0 0 600 140" width="100%" height="140" role="img" aria-label="Comparativo entre envio diário com 30 mensagens e cadência calibrada com ${monthlyCount} envios no mês">
+          <rect x="30" y="76" width="540" height="38" rx="6" fill="var(--tertiary)" fill-opacity="0.12"></rect>
+          <text x="40" y="24" font-family="var(--font-label)" font-size="11" font-weight="600" fill="var(--on-surface-variant)">Modelo Diário (30 alertas/mês — Alto risco de fadiga e bloqueio)</text>
+          ${dailyDots.join(``)}
+          <text x="40" y="70" font-family="var(--font-label)" font-size="11" font-weight="600" fill="var(--secondary)">Cadência Calibrada Atual (${monthlyCount} envio(s) / mês — Zona ideal de engajamento)</text>
+          <line x1="40" y1="96" x2="560" y2="96" stroke="var(--outline-variant)" stroke-width="2"></line>
+          ${calibratedDots}
+        </svg>
+      `;
+    }
+
+    async function persistAppState() {
+      if (window.notebookAppApi && typeof window.notebookAppApi.setAppState === `function`) {
+        try {
+          await window.notebookAppApi.setAppState(appState);
+        } catch (err) {
+          /* Silent fallback outside host */
+        }
+      }
+    }
+
+    async function initApp() {
+      let restored = null;
+      if (window.notebookAppApi && typeof window.notebookAppApi.getAppState === `function`) {
+        try {
+          restored = await window.notebookAppApi.getAppState();
+        } catch (err) {
+          restored = null;
+        }
+      }
+
+      if (restored && restored.clinical) {
+        appState = Object.assign({}, appState, restored);
+        writeStateToInputs();
+        switchModule(appState.activeModule || 1);
+      } else {
+        loadPreset(`hepatitec`);
+      }
+
+      if (window.notebookAppApi && typeof window.notebookAppApi.notifyAppReady === `function`) {
+        window.notebookAppApi.notifyAppReady();
+      }
+    }
+
+    document.addEventListener(`DOMContentLoaded`, initApp);
+  </script>
+</body>
+</html>
