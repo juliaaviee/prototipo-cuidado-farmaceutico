@@ -1,20 +1,10 @@
-# 🏥 Sistema de Cuidado Farmacêutico e Telemonitoramento (SUS)
+# Sistema de Cuidado Farmacêutico e Telemonitoramento (SUS)
 > **Engenharia de Computação na Comunidade — Avaliação 3 (UnB)**  
 > Protótipo de Software de Apoio à Decisão Clínica e Acompanhamento Preventivo para Doenças Crônicas Infecciosas.
 
 ---
 
-## 👥 Integrantes — GRUPO 2
-* **Isaque Holanda Mourão**
-* **Júlia Barroso Vieira**
-* **Ladji Ayouba Koné**
-* **Maria Clara Gomes da Silva**
-* **Maria Eduarda Alves de Souza**
-* **Vitor Miguel Souto de Deus**
-
----
-
-## 📌 O Problema na Comunidade
+## O Problema na Comunidade
 
 Nos tratamentos de alto custo do SUS para doenças crônicas infecciosas (como **Hepatite C, Hepatite B, HIV e Tuberculose**), a taxa de não adesão atinge até **50%**. 
 
@@ -25,26 +15,26 @@ Em condições frequentemente assintomáticas (como a Hepatite C na Farmácia Es
 
 ---
 
-## 🚀 A Solução Proposta
+## A Solução Proposta
 
 O projeto consiste em uma plataforma de **inteligência farmacoterapêutica e telemonitoramento** desenvolvida para integrar o ecossistema SUS-DF/RIDE. A ferramenta é dividida em 3 módulos principais:
 
-### 1. 🩺 Consultório & Assistente RAG (IA Clínica)
+### 1. Consultório & Assistente RAG (IA Clínica)
 * Apoia o farmacêutico na consulta presencial.
 * Cruza os relatos do paciente (dados subjetivos) com exames laboratoriais (dados objetivos) utilizando **Inteligência Artificial (Retrieval-Augmented Generation)** pré-carregada com diretrizes oficiais da Anvisa/OMS.
 * Avalia a pontuação de **letramento em saúde, escolar e digital** do paciente.
 
-### 2. 📊 Estratificação de Risco & Documentação Automática
+### 2. Estratificação de Risco & Documentação Automática
 * Calcula o **grau de risco de não adesão** ao tratamento (Alto, Médio ou Baixo).
 * Gera automaticamente a evolução clínica para o prontuário e cartas de encaminhamento para serviços de apoio (médicos, CAPS e assistência social).
 
-### 3. 📱 Telemonitoramento Preventivo (WhatsApp)
+### 3. Telemonitoramento Preventivo (WhatsApp)
 * Dispara mensagens automáticas de checagem com frequência calibrada conforme o nível de risco do paciente, evitando fadiga de alertas.
 * Possui **gatilhos de segurança**: caso o paciente reporte sintomas graves ou abandono, a conversa é escalonada imediatamente para o farmacêutico humano (conforme a RDC 657/2022 da Anvisa).
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 * **Frontend:** HTML5, CSS3, Tailwind CSS.
 * **Lógica & Interatividade:** JavaScript (Vanilla ES6+).
@@ -52,10 +42,10 @@ O projeto consiste em uma plataforma de **inteligência farmacoterapêutica e te
 
 ---
 
-## 💻 Como Executar o Protótipo
+## Como Executar o Protótipo
 
 ### Opção 1: Pelo Navegador (GitHub Pages)
-Acesse a demonstração ao vivo diretamente pelo link do projeto no GitHub Pages.
+Acesse a demonstração ao vivo diretamente pelo link do projeto no GitHub Pages: https://juliaaviee.github.io/prototipo-cuidado-farmaceutico/
 
 ### Opção 2: Execução Local
 1. Clone ou baixe os arquivos deste repositório.
@@ -63,7 +53,7 @@ Acesse a demonstração ao vivo diretamente pelo link do projeto no GitHub Pages
 
 ---
 
-## 🎯 Alinhamento com os Objetivos de Desenvolvimento Sustentável (ODS)
+## Alinhamento com os Objetivos de Desenvolvimento Sustentável (ODS)
 
 * **ODS 3 — Saúde e Bem-Estar:** Redução da mortalidade e agravamento de doenças transmissíveis e melhoria da adesão terapêutica.
 * **ODS 9 — Indústria, Inovação e Infraestrutura:** Aplicação de Inteligência Artificial e engenharia de software na saúde pública.
